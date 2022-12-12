@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing",
+  "base": {
+    "item": "techresourcesgenerator:base_gessence"
+  },
+  "addition": {
+    "item": "minecraft:redstone_block"
+  },
+  "result": {
+    "item": "techresourcesgenerator:redstone_gessence"
+  }
+}

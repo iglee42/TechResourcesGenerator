@@ -1,0 +1,9 @@
+{
+	"credit": "Made with Blockbench and by iglee42",
+	"parent": "techresourcesgenerator:block/basic_generator",
+	"textures": {
+		"1": "block/stone",
+		"2": "block/nether_bricks",
+		"particle": "block/stone"
+	}
+}

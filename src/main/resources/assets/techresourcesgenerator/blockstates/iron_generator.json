@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "techresourcesgenerator:block/iron_generator"
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+
+  "itemGroup.techresourcesgenerator.generator": "TechResources - Generator",
+
+
+  "block.techresourcesgenerator.basic_generator": "Basic Generator",
+  
+  "block.techresourcesgenerator.iron_generator": "Iron Generator",
+  "block.techresourcesgenerator.gold_generator": "Gold Generator",
+  "block.techresourcesgenerator.diamond_generator": "Diamond Generator",
+  "block.techresourcesgenerator.netherite_generator": "Netherite Generator",
+
+  "block.techresourcesgenerator.modium_generator": "Modium Generator",
+  "block.techresourcesgenerator.derium_generator": "Derium Generator",
+  "block.techresourcesgenerator.blazum_generator": "Blazum Generator",
+  "block.techresourcesgenerator.lavium_generator": "Lavium Generator",
+
+  "item.techresourcesgenerator.base_gessence": "Base Gessence",
+  "item.techresourcesgenerator.wood_gessence": "Wood Gessence",
+  "item.techresourcesgenerator.cobblestone_gessence": "Cobblestone Gessence",
+  "item.techresourcesgenerator.coal_gessence": "Coal Gessence",
+  "item.techresourcesgenerator.iron_gessence": "Iron Gessence",
+  "item.techresourcesgenerator.gold_gessence": "Gold Gessence",
+  "item.techresourcesgenerator.redstone_gessence": "Redstone Gessence",
+  "item.techresourcesgenerator.lapis_gessence": "Lapis Gessence",
+  "item.techresourcesgenerator.diamond_gessence": "Diamond Gessence",
+  "item.techresourcesgenerator.emerald_gessence": "Emerald Gessence",
+  "item.techresourcesgenerator.quartz_gessence": "Quartz Gessence",
+  "item.techresourcesgenerator.netherite_gessence": "Netherite Gessence",
+  "item.techresourcesgenerator.modium_gessence": "Modium Gessence",
+  "item.techresourcesgenerator.derium_gessence": "Derium Gessence",
+  "item.techresourcesgenerator.blazum_gessence": "Blazum Gessence",
+  "item.techresourcesgenerator.lavium_gessence": "Lavium Gessence",
+
+  "tooltip.techresourcesgenerator.no_gessence": "No Gessence",
+  "tooltip.techresourcesgenerator.output_slot_full": "Output Slot Full",
+  "tooltip.techresourcesgenerator.has_gessence": "This generator has already a gessence !",
+  "tooltip.techresourcesgenerator.gessence_not_compatible": "Gessence Not Compatible",
+  "tooltip.techresourcesgenerator.liquid_amount.with_capacity": "%s / %s mB",
+  "tooltip.techresourcesgenerator.liquid_amount": "%s mB"
+}

@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "": { "model": "techresourcesgenerator:block/basic_generator" }
+    }
+}

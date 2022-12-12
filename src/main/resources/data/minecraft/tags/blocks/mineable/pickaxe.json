@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "techresourcesgenerator:iron_generator",
+    "techresourcesgenerator:gold_generator",
+    "techresourcesgenerator:diamond_generator",
+    "techresourcesgenerator:netherite_generator"
+  ]
+}

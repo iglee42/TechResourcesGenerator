@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WWW",
+    "S S",
+    "WWW"
+  ],
+  "key":{
+    "W": {
+      "tag": "minecraft:logs"
+    },
+    "S": {
+      "tag": "forge:stone"
+    }
+  },
+  "result": {
+    "item": "techresourcesgenerator:basic_generator"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "CGC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:cobblestone"
+    },
+    "G": {
+      "item": "techresourcesgenerator:coal_gessence"
+    }
+  },
+  "result": {
+    "item": "techresourcesgenerator:iron_gessence"
+  }
+}

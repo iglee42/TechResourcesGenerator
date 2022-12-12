@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "RLR",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:cobblestone"
+    },
+    "L": {
+      "item": "techresourcesgenerator:lapis_gessence"
+    },
+    "R": {
+      "item": "techresourcesgenerator:redstone_gessence"
+    }
+  },
+  "result": {
+    "item": "techresourcesgenerator:diamond_gessence"
+  }
+}

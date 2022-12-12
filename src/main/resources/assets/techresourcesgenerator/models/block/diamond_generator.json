@@ -1,0 +1,7 @@
+{
+  "parent": "techresourcesgenerator:block/magmatic_generator",
+  "textures": {
+    "1": "minecraft:block/diamond_block",
+    "particle": "minecraft:block/diamond_block"
+  }
+}

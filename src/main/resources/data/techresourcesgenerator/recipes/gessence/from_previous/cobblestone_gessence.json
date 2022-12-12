@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "CWC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:cobblestone"
+    },
+    "W": {
+      "item": "techresourcesgenerator:wood_gessence"
+    }
+  },
+  "result": {
+    "item": "techresourcesgenerator:cobblestone_gessence"
+  }
+}

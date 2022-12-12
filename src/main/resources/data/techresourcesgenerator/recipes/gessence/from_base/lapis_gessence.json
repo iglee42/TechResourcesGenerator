@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing",
+  "base": {
+    "item": "techresourcesgenerator:base_gessence"
+  },
+  "addition": {
+    "item": "minecraft:lapis_lazuli_block"
+  },
+  "result": {
+    "item": "techresourcesgenerator:lapis_gessence"
+  }
+}

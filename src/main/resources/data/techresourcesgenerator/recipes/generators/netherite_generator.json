@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing",
+  "base": {
+    "item": "techresourcesgenerator:diamond_generator"
+  },
+  "addition": {
+    "item": "minecraft:ancient_debris"
+  },
+  "result": {
+    "item": "techresourcesgenerator:netherite_generator"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "DMD",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:cobblestone"
+    },
+    "M": {
+      "item": "techresourcesgenerator:emerald_gessence"
+    },
+    "D": {
+      "item": "techresourcesgenerator:diamond_gessence"
+    }
+  },
+  "result": {
+    "item": "techresourcesgenerator:netherite_gessence"
+  }
+}

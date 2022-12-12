@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "techresourcesgenerator:block/gold_generator"
+    }
+  }
+}

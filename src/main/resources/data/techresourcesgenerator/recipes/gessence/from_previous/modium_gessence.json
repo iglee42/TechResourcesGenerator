@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CEC",
+    "DMD",
+    "CEC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:netherite_scrap"
+    },
+    "M": {
+      "item": "techresourcesgenerator:netherite_gessence"
+    },
+    "E": {
+      "item": "techresourcesgenerator:emerald_gessence"
+    },
+    "D": {
+      "item": "techresourcesgenerator:diamond_gessence"
+    }
+  },
+  "result": {
+    "item": "techresourcesgenerator:modium_gessence"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing",
+  "base": {
+    "item": "techresourcesgenerator:base_gessence"
+  },
+  "addition": {
+    "item": "techresourcesbase:lavium_block"
+  },
+  "result": {
+    "item": "techresourcesgenerator:lavium_gessence"
+  }
+}
