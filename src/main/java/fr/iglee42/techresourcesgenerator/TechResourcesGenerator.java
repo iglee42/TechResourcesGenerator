@@ -2,7 +2,9 @@ package fr.iglee42.techresourcesgenerator;
 
 import fr.iglee42.techresourcesbase.config.TechResourcesBaseCommonConfig;
 import fr.iglee42.techresourcesgenerator.blocks.ModBlock;
+import fr.iglee42.techresourcesgenerator.client.screen.ElectricGeneratorScreen;
 import fr.iglee42.techresourcesgenerator.config.CommonConfigs;
+import fr.iglee42.techresourcesgenerator.menu.ElectricGeneratorMenu;
 import fr.iglee42.techresourcesgenerator.network.ModMessages;
 import fr.iglee42.techresourcesgenerator.client.screen.MagmaticGeneratorScreen;
 import fr.iglee42.techresourcesgenerator.menu.ModMenuTypes;
@@ -80,6 +82,7 @@ public class TechResourcesGenerator {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             MenuScreens.register(ModMenuTypes.MAGMATIC_GENERATOR_MENU.get(), MagmaticGeneratorScreen::new);
+            MenuScreens.register(ModMenuTypes.ELECTRIC_GENERATOR_MENU.get(), ElectricGeneratorScreen::new);
         }
     }
 

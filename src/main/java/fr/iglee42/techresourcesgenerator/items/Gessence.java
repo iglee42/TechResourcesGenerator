@@ -9,6 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -16,8 +17,15 @@ import java.util.Locale;
 
 public class Gessence extends Item {
 
-    public static boolean isGessence(ItemStack stack){
-        return stack.getItem() instanceof Gessence;
+    public static boolean isGessence(Item item){
+        return item instanceof Gessence;
+    }
+
+    public static boolean isNormalGessence(Item item){
+        return ForgeRegistries.ITEMS.getKey(item).getPath().endsWith("_gessence");
+    }
+    public static boolean isElectronicGessence(Item item){
+        return ForgeRegistries.ITEMS.getKey(item).getPath().endsWith("_card");
     }
 
     private GessenceType type;

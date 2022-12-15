@@ -14,5 +14,6 @@ public class ModBlockEntities {
 
     public static final RegistryObject<BlockEntityType<?>> MANUAL_GENERATOR =TILE_ENTITIES.register("manual_generator_tile",() -> BlockEntityType.Builder.of(ManualGeneratorTile::new, ModBlock.BASIC_GENERATOR.get()).build(null));
     public static final RegistryObject<BlockEntityType<?>> MAGMATIC_GENERATOR =TILE_ENTITIES.register("magmatic_generator_tile",() -> BlockEntityType.Builder.of(MagmaticGeneratorTile::new,ModBlock.IRON_GENERATOR.get(),ModBlock.GOLD_GENERATOR.get(),ModBlock.DIAMOND_GENERATOR.get(),ModBlock.NETHERITE_GENERATOR.get()).build(null));
+    public static final RegistryObject<BlockEntityType<?>> ELECTRIC_GENERATOR =TILE_ENTITIES.register("electric_generator_tile",() -> BlockEntityType.Builder.of(MagmaticGeneratorTile::new,ModBlock.MODIUM_GENERATOR.get(),ModBlock.DERIUM_GENERATOR.get(),ModBlock.BLAZUM_GENERATOR.get(),ModBlock.LAVIUM_GENERATOR.get()).build(null));
 
 }

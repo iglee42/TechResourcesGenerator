@@ -6,7 +6,11 @@ public enum GeneratorType {
     IRON(1),
     GOLD(2),
     DIAMOND(3),
-    NETHERITE(4)
+    NETHERITE(4),
+    MODIUM(5),
+    DERIUM(6),
+    BLAZUM(7),
+    LAVIUM(8),
     ;
 
     private int order;

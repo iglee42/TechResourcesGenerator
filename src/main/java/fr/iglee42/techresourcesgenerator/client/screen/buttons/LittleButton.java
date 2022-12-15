@@ -1,4 +1,4 @@
-package fr.iglee42.techresourcesgenerator.menu.buttons;
+package fr.iglee42.techresourcesgenerator.client.screen.buttons;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

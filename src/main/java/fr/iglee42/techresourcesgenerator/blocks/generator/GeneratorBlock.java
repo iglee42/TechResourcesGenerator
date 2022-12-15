@@ -2,6 +2,8 @@ package fr.iglee42.techresourcesgenerator.blocks.generator;
 
 import fr.iglee42.techresourcesgenerator.blocks.ModBlock;
 import fr.iglee42.techresourcesgenerator.items.Gessence;
+import fr.iglee42.techresourcesgenerator.items.ModItem;
+import fr.iglee42.techresourcesgenerator.tiles.generator.ElectricGeneratorTile;
 import fr.iglee42.techresourcesgenerator.tiles.generator.GeneratorTile;
 import fr.iglee42.techresourcesgenerator.tiles.generator.MagmaticGeneratorTile;
 import fr.iglee42.techresourcesgenerator.tiles.generator.ManualGeneratorTile;
@@ -70,19 +72,15 @@ public class GeneratorBlock extends BaseEntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         if (level.isClientSide) return InteractionResult.sidedSuccess(true);
-        if (level.getBlockEntity(pos) instanceof MagmaticGeneratorTile te) {
-            if (player.getMainHandItem().is(Items.LAVA_BUCKET) && hit.getDirection() == Direction.UP)
-                return InteractionResult.PASS;
-            else NetworkHooks.openScreen(((ServerPlayer) player), te, pos);
-        } else if (level.getBlockEntity(pos) instanceof ManualGeneratorTile te) {
+        if (level.getBlockEntity(pos) instanceof ManualGeneratorTile te) {
             if (player.isCrouching()) {
                 if (te.hasGessence()) {
-                    Block.popResource(level, pos.offset(0, 1, 0), new ItemStack(te.getGessence().getGessence().get()));
+                    Block.popResource(level, pos.offset(0, 1, 0), new ItemStack(ModItem.getGessence(te.getGessence())));
                     te.setGessence(null);
                     return InteractionResult.SUCCESS;
                 }
             }
-            if (Gessence.isGessence(player.getMainHandItem())) {
+            if (Gessence.isGessence(player.getMainHandItem().getItem())) {
                 GessenceType type = GessenceType.getByItem(player.getMainHandItem().getItem());
                 if (type.getMinimumGenerator().getOrder() <= GeneratorType.BASIC.getOrder()) {
                     if (te.hasGessence()) {
@@ -111,6 +109,12 @@ public class GeneratorBlock extends BaseEntityBlock {
             }
 
             return InteractionResult.SUCCESS;
+        } else if (level.getBlockEntity(pos) instanceof MagmaticGeneratorTile te) {
+            if (player.getMainHandItem().is(Items.LAVA_BUCKET) && hit.getDirection() == Direction.UP)
+                return InteractionResult.PASS;
+            else NetworkHooks.openScreen(((ServerPlayer) player), te, pos);
+        } else if (level.getBlockEntity(pos) instanceof ElectricGeneratorTile te) {
+            NetworkHooks.openScreen(((ServerPlayer) player), te, pos);
         }
         return InteractionResult.PASS;
     }

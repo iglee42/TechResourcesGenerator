@@ -1,4 +1,4 @@
-package fr.iglee42.techresourcesgenerator.menu.render;
+package fr.iglee42.techresourcesgenerator.client.screen.render;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;

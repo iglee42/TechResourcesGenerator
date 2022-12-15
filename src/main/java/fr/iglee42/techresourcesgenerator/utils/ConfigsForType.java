@@ -11,6 +11,10 @@ public enum ConfigsForType {
     GOLD(GeneratorType.GOLD,CommonConfigs.GOLD_GENERATOR_DELAY.get(),CommonConfigs.GOLD_GENERATOR_GENERATED_ITEM_COUNT.get()),
     DIAMOND(GeneratorType.DIAMOND,CommonConfigs.DIAMOND_GENERATOR_DELAY.get(),CommonConfigs.DIAMOND_GENERATOR_GENERATED_ITEM_COUNT.get()),
     NETHERITE(GeneratorType.NETHERITE,CommonConfigs.NETHERITE_GENERATOR_DELAY.get(),CommonConfigs.NETHERITE_GENERATOR_GENERATED_ITEM_COUNT.get()),
+    MODIUM(GeneratorType.MODIUM,CommonConfigs.MODIUM_GENERATOR_DELAY.get(),CommonConfigs.MODIUM_GENERATOR_GENERATED_ITEM_COUNT.get()),
+    DERIUM(GeneratorType.DERIUM,CommonConfigs.DERIUM_GENERATOR_DELAY.get(),CommonConfigs.DERIUM_GENERATOR_GENERATED_ITEM_COUNT.get()),
+    BLAZUM(GeneratorType.BLAZUM,CommonConfigs.BLAZUM_GENERATOR_DELAY.get(),CommonConfigs.BLAZUM_GENERATOR_GENERATED_ITEM_COUNT.get()),
+    LAVIUM(GeneratorType.LAVIUM,CommonConfigs.LAVIUM_GENERATOR_DELAY.get(),CommonConfigs.LAVIUM_GENERATOR_GENERATED_ITEM_COUNT.get()),
     ;
 
     private GeneratorType type;

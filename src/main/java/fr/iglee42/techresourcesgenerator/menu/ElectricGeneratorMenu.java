@@ -1,10 +1,12 @@
 package fr.iglee42.techresourcesgenerator.menu;
 
 import fr.iglee42.techresourcesgenerator.blocks.ModBlock;
-import fr.iglee42.techresourcesgenerator.menu.slots.BucketSlot;
 import fr.iglee42.techresourcesgenerator.menu.slots.GessenceSlot;
 import fr.iglee42.techresourcesgenerator.menu.slots.OutputSlot;
-import fr.iglee42.techresourcesgenerator.tiles.generator.MagmaticGeneratorTile;
+import fr.iglee42.techresourcesgenerator.network.ModMessages;
+import fr.iglee42.techresourcesgenerator.network.packets.GeneratorDelaySyncC2SPacket;
+import fr.iglee42.techresourcesgenerator.tiles.generator.ElectricGeneratorTile;
+import fr.iglee42.techresourcesgenerator.utils.ConfigsForType;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -17,47 +19,44 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
 
-public class MagmaticGeneratorMenu extends AbstractContainerMenu {
-    public MagmaticGeneratorTile blockEntity;
+public class ElectricGeneratorMenu extends AbstractContainerMenu {
+    public ElectricGeneratorTile blockEntity;
     private final Level level;
-    private FluidStack fluidStack;
     private float delay;
     private Component errorMessage = Component.empty();
 
     private GeneratorType generator;
 
-    public MagmaticGeneratorMenu(int id, Inventory inv, FriendlyByteBuf extraData) {
+    public ElectricGeneratorMenu(int id, Inventory inv, FriendlyByteBuf extraData) {
         this(id, inv, inv.player.level.getBlockEntity(extraData.readBlockPos()),GeneratorType.IRON);
     }
 
-    public MagmaticGeneratorMenu(int id, Inventory inv, BlockEntity entity,GeneratorType generator) {
-        super(ModMenuTypes.MAGMATIC_GENERATOR_MENU.get(), id);
-        blockEntity = (MagmaticGeneratorTile) entity;
+    public ElectricGeneratorMenu(int id, Inventory inv, BlockEntity entity, GeneratorType generator) {
+        super(ModMenuTypes.ELECTRIC_GENERATOR_MENU.get(), id);
+        blockEntity = (ElectricGeneratorTile) entity;
         this.level = inv.player.level;
-        this.fluidStack = blockEntity.getFluidStack();
         this.generator = generator;
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
         this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
-            this.addSlot(new BucketSlot(handler, 0, 31, 15));
-            this.addSlot(new OutputSlot(handler, 1, 31, 60));
-            this.addSlot(new GessenceSlot(handler, 2, 67, 37,blockEntity));
-            this.addSlot(new OutputSlot(handler, 3, 135, 37));
+            this.addSlot(new GessenceSlot(handler, 0, 67, 37, blockEntity,true));
+            this.addSlot(new OutputSlot(handler, 1, 135, 37));
         });
     }
 
-    public void setFluid(FluidStack fluidStack) {
-        this.fluidStack = fluidStack;
-    }
 
-    public FluidStack getFluidStack() {
-        return fluidStack;
-    }
-
-    public MagmaticGeneratorTile getBlockEntity() {
+    public ElectricGeneratorTile getBlockEntity() {
         return this.blockEntity;
+    }
+
+    public int getScaledProgress() {
+        ModMessages.sendToServer(new GeneratorDelaySyncC2SPacket(blockEntity.getBlockPos()));
+        int progress = (int)getDelay();
+        int maxProgress = ConfigsForType.getConfigForType(generator).getDelay();  // Max Progress
+        int progressArrowSize = 43; // This is the height in pixels of your arrow
+
+        return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
     }
 
 
@@ -77,7 +76,7 @@ public class MagmaticGeneratorMenu extends AbstractContainerMenu {
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
     // THIS YOU HAVE TO DEFINE!
-    private static final int TE_INVENTORY_SLOT_COUNT = 4;  // must be the number of slots you have!
+    private static final int TE_INVENTORY_SLOT_COUNT = 2;  // must be the number of slots you have!
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
@@ -114,10 +113,10 @@ public class MagmaticGeneratorMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.IRON_GENERATOR.get()) ||
-         stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.GOLD_GENERATOR.get()) ||
-         stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.DIAMOND_GENERATOR.get()) ||
-         stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.NETHERITE_GENERATOR.get());
+        return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.MODIUM_GENERATOR.get()) ||
+         stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.DERIUM_GENERATOR.get()) ||
+         stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.BLAZUM_GENERATOR.get()) ||
+         stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.LAVIUM_GENERATOR.get());
     }
 
     private void addPlayerInventory(Inventory playerInventory) {
@@ -152,5 +151,9 @@ public class MagmaticGeneratorMenu extends AbstractContainerMenu {
 
     public Component getErrorMessage() {
         return errorMessage;
+    }
+
+    public GeneratorType getGeneratorType() {
+        return generator;
     }
 }

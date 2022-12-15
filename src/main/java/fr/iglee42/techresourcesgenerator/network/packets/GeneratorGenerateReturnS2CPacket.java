@@ -1,5 +1,6 @@
 package fr.iglee42.techresourcesgenerator.network.packets;
 
+import fr.iglee42.techresourcesgenerator.menu.ElectricGeneratorMenu;
 import fr.iglee42.techresourcesgenerator.menu.MagmaticGeneratorMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -32,6 +33,9 @@ public class GeneratorGenerateReturnS2CPacket {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
                 if(Minecraft.getInstance().player.containerMenu instanceof MagmaticGeneratorMenu menu &&
+                        menu.getBlockEntity().getBlockPos().equals(pos)) {
+                    menu.setErrorMessage(message);
+                } else if(Minecraft.getInstance().player.containerMenu instanceof ElectricGeneratorMenu menu &&
                         menu.getBlockEntity().getBlockPos().equals(pos)) {
                     menu.setErrorMessage(message);
                 }

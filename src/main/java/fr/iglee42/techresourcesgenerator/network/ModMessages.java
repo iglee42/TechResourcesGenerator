@@ -31,6 +31,11 @@ public class ModMessages {
                 .encoder(FluidSyncS2CPacket::toBytes)
                 .consumerMainThread(FluidSyncS2CPacket::handle)
                 .add();
+        net.messageBuilder(EnergySyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(EnergySyncS2CPacket::new)
+                .encoder(EnergySyncS2CPacket::toBytes)
+                .consumerMainThread(EnergySyncS2CPacket::handle)
+                .add();
         net.messageBuilder(GeneratorDelaySyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(GeneratorDelaySyncS2CPacket::new)
                 .encoder(GeneratorDelaySyncS2CPacket::toBytes)
