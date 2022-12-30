@@ -1,7 +1,6 @@
 package fr.iglee42.techresourcesgenerator.items;
 
 import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
-import fr.iglee42.techresourcesgenerator.items.Gessence;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -32,9 +31,9 @@ public class ModItem {
     public static final RegistryObject<Item> BLAZUM_GESSENCE = ITEMS.register("blazum_gessence", () -> new Gessence(GessenceType.BLAZUM));
     public static final RegistryObject<Item> LAVIUM_GESSENCE = ITEMS.register("lavium_gessence", () -> new Gessence(GessenceType.LAVIUM)); */
 
-    private static void createGessence(GessenceType type){
-        if (!type.isOnlyElectronic()) ITEMS.register(type.getRessourceName() + "_gessence",()-> new Gessence(type));
-        ITEMS.register(type.getRessourceName() + "_gessence_card",()-> new Gessence(type));
+    public static void createGessence(GessenceType type){
+        if (!type.isOnlyElectronic()) ITEMS.register(type.getRessourceName() + "_gessence",()-> new ItemGessence(type,TechResourcesGenerator.GENERATOR_GROUP));
+        ITEMS.register(type.getRessourceName() + "_gessence_card",()-> new ItemGessence(type,TechResourcesGenerator.CARDS_GROUP));
     }
     
     public static Item getGessence(GessenceType type){

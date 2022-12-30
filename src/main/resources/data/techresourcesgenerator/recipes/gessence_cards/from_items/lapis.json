@@ -1,0 +1,6 @@
+{
+  "type": "techresourcesgenerator:card_infuser",
+  "base": "techresourcesgenerator:gessence_card",
+  "infuser": "minecraft:lapis_block",
+  "result": "techresourcesgenerator:lapis_gessence_card"
+}

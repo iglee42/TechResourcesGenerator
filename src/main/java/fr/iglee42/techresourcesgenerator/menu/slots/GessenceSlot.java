@@ -1,10 +1,8 @@
 package fr.iglee42.techresourcesgenerator.menu.slots;
 
-import fr.iglee42.techresourcesgenerator.items.Gessence;
-import fr.iglee42.techresourcesgenerator.tiles.generator.ElectricGeneratorTile;
+import fr.iglee42.techresourcesgenerator.items.ItemGessence;
 import fr.iglee42.techresourcesgenerator.tiles.generator.GeneratorTile;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -27,6 +25,6 @@ public class GessenceSlot extends SlotItemHandler {
 
     @Override
     public boolean mayPlace(@NotNull ItemStack stack) {
-        return Gessence.isGessence(stack.getItem()) && GessenceType.isGeneratorValidForGessence(stack,generatorTile.getGeneratorType()) && (acceptOnlyElectronic ? Gessence.isElectronicGessence(stack.getItem()) : true);
+        return ItemGessence.isGessence(stack.getItem()) && GessenceType.isGeneratorValidForGessence(stack,generatorTile.getGeneratorType()) && (acceptOnlyElectronic ? ItemGessence.isElectronicGessence(stack.getItem()) : ItemGessence.isNormalGessence(stack.getItem()));
     }
 }

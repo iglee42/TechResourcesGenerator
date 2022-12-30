@@ -36,6 +36,21 @@ public class ModMessages {
                 .encoder(EnergySyncS2CPacket::toBytes)
                 .consumerMainThread(EnergySyncS2CPacket::handle)
                 .add();
+        net.messageBuilder(ItemStackSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ItemStackSyncS2CPacket::new)
+                .encoder(ItemStackSyncS2CPacket::toBytes)
+                .consumerMainThread(ItemStackSyncS2CPacket::handle)
+                .add();
+        net.messageBuilder(CardInfuserProgressSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(CardInfuserProgressSyncS2CPacket::new)
+                .encoder(CardInfuserProgressSyncS2CPacket::toBytes)
+                .consumerMainThread(CardInfuserProgressSyncS2CPacket::handle)
+                .add();
+        net.messageBuilder(GeneratorTypeSyncS2C.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(GeneratorTypeSyncS2C::new)
+                .encoder(GeneratorTypeSyncS2C::toBytes)
+                .consumerMainThread(GeneratorTypeSyncS2C::handle)
+                .add();
         net.messageBuilder(GeneratorDelaySyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(GeneratorDelaySyncS2CPacket::new)
                 .encoder(GeneratorDelaySyncS2CPacket::toBytes)

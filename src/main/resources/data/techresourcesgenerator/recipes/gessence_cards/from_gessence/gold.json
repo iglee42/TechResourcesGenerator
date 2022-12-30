@@ -1,0 +1,6 @@
+{
+  "type": "techresourcesgenerator:card_infuser",
+  "base": "techresourcesgenerator:gessence_card",
+  "infuser": "techresourcesgenerator:gold_gessence",
+  "result": "techresourcesgenerator:gold_gessence_card"
+}

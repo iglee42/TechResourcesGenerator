@@ -1,5 +1,7 @@
 package fr.iglee42.techresourcesgenerator.utils;
 
+import java.util.Arrays;
+
 public enum GeneratorType {
 
     BASIC(0),
@@ -21,6 +23,10 @@ public enum GeneratorType {
 
     public int getOrder() {
         return order;
+    }
+
+    public static GeneratorType getByOrder(int order){
+        return Arrays.stream(values()).filter(t->t.getOrder() == order).findFirst().orElse(GeneratorType.IRON);
     }
 
 

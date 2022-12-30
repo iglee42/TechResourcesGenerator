@@ -19,7 +19,6 @@ import java.util.function.Supplier;
 public class ModBlock {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, TechResourcesGenerator.MODID);
-
     public static final RegistryObject<Block> BASIC_GENERATOR = createManualGenerator("basic");
     public static final RegistryObject<Block> IRON_GENERATOR = createMagmaticGenerator("iron", GeneratorType.IRON);
     public static final RegistryObject<Block> GOLD_GENERATOR = createMagmaticGenerator("gold", GeneratorType.GOLD);
@@ -29,6 +28,7 @@ public class ModBlock {
     public static final RegistryObject<Block> DERIUM_GENERATOR = createElectricGenerator("derium", GeneratorType.DERIUM);
     public static final RegistryObject<Block> BLAZUM_GENERATOR = createElectricGenerator("blazum", GeneratorType.BLAZUM);
     public static final RegistryObject<Block> LAVIUM_GENERATOR = createElectricGenerator("lavium", GeneratorType.LAVIUM);
+    public static final RegistryObject<Block> CARD_INFUSER = createBlock("card_infuser", () -> new BlockCardInfuser());
 
     public static RegistryObject<Block> createManualGenerator(String name){
         return createBlock(name + "_generator",()-> new ManualGenerator(GeneratorType.BASIC));

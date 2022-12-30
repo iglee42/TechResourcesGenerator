@@ -1,17 +1,16 @@
 package fr.iglee42.techresourcesgenerator.tiles.generator;
 
 import fr.iglee42.techresourcesgenerator.menu.ElectricGeneratorMenu;
-import fr.iglee42.techresourcesgenerator.menu.MagmaticGeneratorMenu;
 import fr.iglee42.techresourcesgenerator.network.ModMessages;
-import fr.iglee42.techresourcesgenerator.network.packets.EnergySyncS2CPacket;
-import fr.iglee42.techresourcesgenerator.network.packets.FluidSyncS2CPacket;
-import fr.iglee42.techresourcesgenerator.network.packets.GeneratorGenerateReturnS2CPacket;
+import fr.iglee42.techresourcesgenerator.network.packets.*;
 import fr.iglee42.techresourcesgenerator.tiles.ModBlockEntities;
+import fr.iglee42.techresourcesgenerator.utils.ConfigsForType;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
 import fr.iglee42.techresourcesgenerator.utils.ModEnergyStorage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
@@ -23,12 +22,10 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +38,16 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
         protected void onContentsChanged(int slot) {
             setChanged();
         }
+
+        @Override
+        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            if (slot == 1 && simulate) return stack;
+            return super.insertItem(slot, stack, simulate);
+        }
+
     };
+
+    private int progress = 0;
 
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
@@ -59,19 +65,29 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
 
     @Override
     protected void second(Level level, BlockPos pos, BlockState state, GeneratorTile tile) {
-        this.setGessence(GessenceType.getByItem(itemHandler.getStackInSlot(0).getItem()));
-        if (hasEnoughtEnergyForAllProcess() && getDelay() > 0 && !isEnabled()){
-            this.enabled = true;
+        this.setGessence(GessenceType.getByItemCanBeNull(itemHandler.getStackInSlot(0).getItem()));
+        if (!this.enabled){
+            this.enabled = hasEnoughtEnergyForAllProcess() && getDelay() > 0;
         }
-        if (isEnabled()){
+        if (getDelay() == 0){
+            if (generateItem()){
+                progress = 0;
+                resetDelay();
+                this.enabled = false;
+            }
+        }
+        if (isEnabled() && getEnergyStorage().extractEnergy(ConfigsForType.getConfigForType(getGeneratorType()).getConsumeFE(),true) > 0){
             setDelay(getDelay() - 1);
-            getEnergyStorage().extractEnergy(1,false);
+            progress++;
+            getEnergyStorage().extractEnergy(ConfigsForType.getConfigForType(getGeneratorType()).getConsumeFE(),false);
             setChanged();
+
         }
+
     }
 
     private boolean hasEnoughtEnergyForAllProcess() {
-        return true;
+        return (ConfigsForType.getConfigForType(getGeneratorType()).getConsumeFE() * ConfigsForType.getConfigForType(getGeneratorType()).getDelay()) <= getEnergyStorage().getEnergyStored();
     }
 
 
@@ -89,6 +105,7 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
         super.setChanged();
         if(!level.isClientSide()) {
             ModMessages.sendToClients(new EnergySyncS2CPacket(getEnergyStorage().getEnergyStored(), worldPosition));
+            ModMessages.sendToClients(new ItemStackSyncS2CPacket(itemHandler, worldPosition));
         }
     }
 
@@ -101,9 +118,10 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
     }
 
     private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
+
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
-        return cap == ForgeCapabilities.ITEM_HANDLER ? lazyItemHandler.cast() : (cap == ForgeCapabilities.FLUID_HANDLER ? lazyEnergyHandler.cast() : super.getCapability(cap));
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
+        return cap == ForgeCapabilities.ITEM_HANDLER ? lazyItemHandler.cast() : (cap == ForgeCapabilities.ENERGY ? lazyEnergyHandler.cast() : super.getCapability(cap,side));
     }
 
     @Override
@@ -126,6 +144,7 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         ENERGY_STORAGE.setEnergy(tag.getInt("energy"));
         this.setGeneratorType(GeneratorType.valueOf(tag.getString("generatorType")));
+        progress = tag.getInt("progress");
     }
 
     @Override
@@ -161,6 +180,7 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
         tag.put("inventory", itemHandler.serializeNBT());
         tag.putInt("energy",ENERGY_STORAGE.getEnergyStored());
         tag.putString("generatorType",getGeneratorType().name());
+        tag.putInt("progress",progress);
     }
     public void drops() {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
@@ -171,7 +191,9 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
         Containers.dropContents(this.level, this.worldPosition, inventory);
     }
 
-
+    public int getProgress() {
+        return progress;
+    }
 
     @Override
     public Component getDisplayName() {
@@ -182,6 +204,13 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
         ModMessages.sendToClients(new EnergySyncS2CPacket(getEnergyStorage().getEnergyStored(), worldPosition));
+        ModMessages.sendToClients(new GeneratorTypeSyncS2C(getGeneratorType(), worldPosition));
         return new ElectricGeneratorMenu(id,inv,this,getGeneratorType());
+    }
+
+    public void setHandler(ItemStackHandler itemStackHandler) {
+        for (int i = 0; i < itemStackHandler.getSlots(); i++) {
+            itemHandler.setStackInSlot(i, itemStackHandler.getStackInSlot(i));
+        }
     }
 }

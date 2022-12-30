@@ -1,13 +1,13 @@
 package fr.iglee42.techresourcesgenerator.utils;
 
-import fr.iglee42.techresourcesgenerator.items.Gessence;
-import fr.iglee42.techresourcesgenerator.items.ModItem;
+import fr.iglee42.techresourcesbase.TechResourcesBase;
+import fr.iglee42.techresourcesgenerator.items.ItemGessence;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public enum GessenceType {
@@ -22,23 +22,27 @@ public enum GessenceType {
     DIAMOND(Items.DIAMOND,"diamond", false,GeneratorType.GOLD),
     EMERALD(Items.EMERALD,"emerald", true,GeneratorType.DIAMOND),
     NETHERITE(Items.NETHERITE_SCRAP,"netherite", false,GeneratorType.DIAMOND),
-    MODIUM(fr.iglee42.techresourcesbase.init.ModItem.MODIUM_INGOT.get(),"modium",true,GeneratorType.NETHERITE),
-    DERIUM(fr.iglee42.techresourcesbase.init.ModItem.DERIUM_INGOT.get(), "derium",true,GeneratorType.MODIUM),
-    BLAZUM(fr.iglee42.techresourcesbase.init.ModItem.BLAZUM_INGOT.get(), "blazum",true,GeneratorType.DERIUM),
-    LAVIUM(fr.iglee42.techresourcesbase.init.ModItem.LAVIUM_INGOT.get(), "lavium",true,GeneratorType.BLAZUM)
+    MODIUM(new ResourceLocation(TechResourcesBase.MODID,"modium_ingot"),"modium",false,GeneratorType.NETHERITE),
+    DERIUM(new ResourceLocation(TechResourcesBase.MODID,"derium_ingot"), "derium",true,GeneratorType.MODIUM),
+    BLAZUM(new ResourceLocation(TechResourcesBase.MODID,"blazum_ingot"), "blazum",true,GeneratorType.DERIUM),
+    LAVIUM(new ResourceLocation(TechResourcesBase.MODID,"lavium_ingot"), "lavium",true,GeneratorType.BLAZUM)
     ;
 
-    private Item item;
-    private boolean isOnlyElectronic;
+    private ResourceLocation item;
     private String resourceName;
-
+    private boolean isOnlyElectronic;
     private GeneratorType minimumGenerator;
-    GessenceType(Item item, String resourceName, boolean isOnlyElectronic, GeneratorType minimumGenerator) {
+    GessenceType(ResourceLocation item,  String resourceName,boolean isOnlyElectronic, GeneratorType minimumGenerator) {
         this.item = item;
-        this.resourceName = resourceName;
         this.isOnlyElectronic = isOnlyElectronic;
+        this.resourceName = resourceName;
         this.minimumGenerator = minimumGenerator;
     }
+    GessenceType(Item item, String resourceName, boolean isOnlyElectronic, GeneratorType minimumGenerator) {
+        this(ForgeRegistries.ITEMS.getKey(item),resourceName,isOnlyElectronic,minimumGenerator);
+    }
+
+
 
     public static GessenceType getByResourceName(String name){
         for (GessenceType type : values()){
@@ -48,15 +52,18 @@ public enum GessenceType {
     }
 
     public static GessenceType getByItem(Item item) {
-        return Gessence.isGessence(item) ? ((Gessence)item).getType() : GessenceType.WOOD;
+        return ItemGessence.isGessence(item) ? ((ItemGessence)item).getType() : GessenceType.WOOD;
     }
+    public static GessenceType getByItemCanBeNull(Item item) {
+        return ItemGessence.isGessence(item) ? ((ItemGessence)item).getType() : null;
+    }
+
 
     public static boolean isGeneratorValidForGessence(ItemStack stack,GeneratorType type){
         return getByItem(stack.getItem()).getMinimumGenerator().getOrder() <= type.getOrder();
     }
 
-    public Item getItem() {return item;
-    }
+    public Item getItem() {return ForgeRegistries.ITEMS.getValue(item);}
 
     public GeneratorType getMinimumGenerator() {
         return minimumGenerator;

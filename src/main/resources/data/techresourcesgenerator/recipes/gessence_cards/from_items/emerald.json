@@ -1,0 +1,6 @@
+{
+  "type": "techresourcesgenerator:card_infuser",
+  "base": "techresourcesgenerator:gessence_card",
+  "infuser": "minecraft:emerald_block",
+  "result": "techresourcesgenerator:emerald_gessence_card"
+}

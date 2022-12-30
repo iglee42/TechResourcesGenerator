@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing",
+  "base": {
+    "item": "techresourcesgenerator:netherite_generator"
+  },
+  "addition": {
+    "item": "techresourcesbase:modium_block"
+  },
+  "result": {
+    "item": "techresourcesgenerator:modium_generator"
+  }
+}

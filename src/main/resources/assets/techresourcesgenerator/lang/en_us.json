@@ -1,8 +1,9 @@
 {
 
   "itemGroup.techresourcesgenerator.generator": "TechResources - Generator",
+  "itemGroup.techresourcesgenerator.cards": "TechResourcesGenerator - Electric",
 
-
+  "block.techresourcesgenerator.card_infuser": "Gessence Card Infuser",
   "block.techresourcesgenerator.basic_generator": "Basic Generator",
   
   "block.techresourcesgenerator.iron_generator": "Iron Generator",
@@ -32,6 +33,26 @@
   "item.techresourcesgenerator.blazum_gessence": "Blazum Gessence",
   "item.techresourcesgenerator.lavium_gessence": "Lavium Gessence",
 
+  "item.techresourcesgenerator.gessence_card": "Gessence Card",
+  "item.techresourcesgenerator.wood_gessence_card": "Wood Gessence Card",
+  "item.techresourcesgenerator.cobblestone_gessence_card": "Cobblestone Gessence Card",
+  "item.techresourcesgenerator.coal_gessence_card": "Coal Gessence Card",
+  "item.techresourcesgenerator.iron_gessence_card": "Iron Gessence Card",
+  "item.techresourcesgenerator.gold_gessence_card": "Gold Gessence Card",
+  "item.techresourcesgenerator.redstone_gessence_card": "Redstone Gessence Card",
+  "item.techresourcesgenerator.lapis_gessence_card": "Lapis Gessence Card",
+  "item.techresourcesgenerator.quartz_gessence_card": "Quartz Gessence Card",
+  "item.techresourcesgenerator.diamond_gessence_card": "Diamond Gessence Card",
+  "item.techresourcesgenerator.emerald_gessence_card": "Emerald Gessence Card",
+  "item.techresourcesgenerator.netherite_gessence_card": "Netherite Gessence Card",
+  "item.techresourcesgenerator.modium_gessence_card": "Modium Gessence Card",
+  "item.techresourcesgenerator.derium_gessence_card": "Derium Gessence Card",
+  "item.techresourcesgenerator.blazum_gessence_card": "Blazum Gessence Card",
+  "item.techresourcesgenerator.lavium_gessence_card": "Lavium Gessence Card",
+
+
+  "tooltip.techresourcesgenerator.dontaccept": "Don't accept",
+  "tooltip.techresourcesgenerator.electronicgessence" : "electronic gessence",
   "tooltip.techresourcesgenerator.no_gessence": "No Gessence",
   "tooltip.techresourcesgenerator.output_slot_full": "Output Slot Full",
   "tooltip.techresourcesgenerator.has_gessence": "This generator has already a gessence !",

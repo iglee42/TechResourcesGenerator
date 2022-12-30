@@ -53,10 +53,10 @@ public class ElectricGeneratorMenu extends AbstractContainerMenu {
     public int getScaledProgress() {
         ModMessages.sendToServer(new GeneratorDelaySyncC2SPacket(blockEntity.getBlockPos()));
         int progress = (int)getDelay();
-        int maxProgress = ConfigsForType.getConfigForType(generator).getDelay();  // Max Progress
-        int progressArrowSize = 43; // This is the height in pixels of your arrow
+        int maxProgress = ConfigsForType.getConfigForType(generator).getDelay();  // Max Progress 3
+        int progressArrowSize = 255; // This is the height in pixels of your arrow
 
-        return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
+        return maxProgress != 0 && progress != 0 ? progress * (progressArrowSize / maxProgress) : 0;
     }
 
 
@@ -76,7 +76,7 @@ public class ElectricGeneratorMenu extends AbstractContainerMenu {
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
     // THIS YOU HAVE TO DEFINE!
-    private static final int TE_INVENTORY_SLOT_COUNT = 2;  // must be the number of slots you have!
+    private static final int TE_INVENTORY_SLOT_COUNT = 1;  // must be the number of slots you have!
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
@@ -98,7 +98,6 @@ public class ElectricGeneratorMenu extends AbstractContainerMenu {
                 return ItemStack.EMPTY;
             }
         } else {
-            System.out.println("Invalid slotIndex:" + index);
             return ItemStack.EMPTY;
         }
         // If stack size == 0 (the entire stack was moved) set slot contents to null
@@ -155,5 +154,9 @@ public class ElectricGeneratorMenu extends AbstractContainerMenu {
 
     public GeneratorType getGeneratorType() {
         return generator;
+    }
+
+    public void setGeneratorType(GeneratorType type) {
+        this.generator = type;
     }
 }

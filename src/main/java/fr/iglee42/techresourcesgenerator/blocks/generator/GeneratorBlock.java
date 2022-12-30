@@ -1,7 +1,7 @@
 package fr.iglee42.techresourcesgenerator.blocks.generator;
 
-import fr.iglee42.techresourcesgenerator.blocks.ModBlock;
-import fr.iglee42.techresourcesgenerator.items.Gessence;
+import fr.iglee42.techresourcesgenerator.blocks.generator.automatic.ElectricGenerator;
+import fr.iglee42.techresourcesgenerator.items.ItemGessence;
 import fr.iglee42.techresourcesgenerator.items.ModItem;
 import fr.iglee42.techresourcesgenerator.tiles.generator.ElectricGeneratorTile;
 import fr.iglee42.techresourcesgenerator.tiles.generator.GeneratorTile;
@@ -30,13 +30,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.CubeVoxelShape;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.world.phys.shapes.*;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,7 +76,7 @@ public class GeneratorBlock extends BaseEntityBlock {
                     return InteractionResult.SUCCESS;
                 }
             }
-            if (Gessence.isGessence(player.getMainHandItem().getItem())) {
+            if (ItemGessence.isGessence(player.getMainHandItem().getItem())) {
                 GessenceType type = GessenceType.getByItem(player.getMainHandItem().getItem());
                 if (type.getMinimumGenerator().getOrder() <= GeneratorType.BASIC.getOrder()) {
                     if (te.hasGessence()) {
@@ -114,14 +110,40 @@ public class GeneratorBlock extends BaseEntityBlock {
                 return InteractionResult.PASS;
             else NetworkHooks.openScreen(((ServerPlayer) player), te, pos);
         } else if (level.getBlockEntity(pos) instanceof ElectricGeneratorTile te) {
-            NetworkHooks.openScreen(((ServerPlayer) player), te, pos);
+            if (ItemGessence.isElectronicGessence(player.getMainHandItem().getItem())){
+                te.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(itH->{
+                    if (itH.getStackInSlot(0).isEmpty()) {
+                        ItemStack stack = player.getMainHandItem().copy();
+                        stack.setCount(1);
+                        itH.insertItem(0, stack, false);
+                        player.getMainHandItem().setCount(player.getMainHandItem().getCount() - 1);
+                    }
+                });
+            } else
+                NetworkHooks.openScreen(((ServerPlayer) player), te, pos);
         }
         return InteractionResult.PASS;
     }
 
     @Override
     public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
-        return Shapes.or(Block.box(0, 0, 0, 16, 1, 16),
+        VoxelShape shape = Shapes.empty();
+        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.0625, 0.9375, 0.8125, 0.9375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.0625, 0.8125, 0.5625, 0.6875, 0.9375, 0.9375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.6875, 0.8125, 0.5, 0.9375, 0.9375, 0.9375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.0625, 0.8125, 0.0625, 0.9375, 0.9375, 0.5), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.0625, 0.8125, 0.5, 0.3125, 0.9375, 0.5625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0, 0.9375, 0.0625, 0.0625, 1, 1), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.0625, 0.9375, 0.5625, 0.6875, 1, 0.9375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.6875, 0.9375, 0.5, 0.9375, 1, 0.9375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.0625, 0.9375, 0.0625, 0.9375, 1, 0.5), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.0625, 0.9375, 0.5, 0.3125, 1, 0.5625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0, 0.9375, 0, 1, 1, 0.0625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.0625, 0.9375, 0.9375, 0.9375, 1, 1), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.9375, 0.9375, 0.0625, 1, 1, 1), BooleanOp.OR);
+
+        return this instanceof ElectricGenerator ? shape :Shapes.or(Block.box(0, 0, 0, 16, 1, 16),
                 Block.box(1, 1, 1, 15, 15, 15),
                 Block.box(0, 15, 0, 16, 16, 16)
         );
@@ -132,7 +154,7 @@ public class GeneratorBlock extends BaseEntityBlock {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
             if (blockEntity instanceof MagmaticGeneratorTile te) {
                 te.drops();
-            }
+            } else if (blockEntity instanceof ElectricGeneratorTile te) te.drops();
         }
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }

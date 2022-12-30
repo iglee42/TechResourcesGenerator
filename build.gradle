@@ -15,7 +15,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'eclipse'
 
 group = 'fr.iglee42'
-version = '1.19.2-1.0.1'
+version = '1.19.2-1.1'
 
 java {
     archivesBaseName = 'TechResourcesGenerator'
@@ -143,6 +143,12 @@ repositories {
             password = '01GH6W3DDQH6TAKFT9M26XBXC6'
         }
     }
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 
 }
 
@@ -164,7 +170,8 @@ dependencies {
 
     implementation fg.deobf("fr.iglee42.techresourcesbase:TechResourcesBase:${mc_version}-${lib_version}")
 
-
+    implementation(fg.deobf("curse.maven:mekanism-268560:4041164"))
+    implementation(fg.deobf("curse.maven:pipez-443900:4064952"))
     // Examples using mod jars from ./libs
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
 

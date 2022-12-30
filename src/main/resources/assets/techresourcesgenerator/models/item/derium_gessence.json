@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "techresourcesgenerator:item/derium_gessence"
-  }
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "techresourcesgenerator:item/gessence/derium"
+	}
 }
