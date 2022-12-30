@@ -33,6 +33,7 @@ public abstract class GeneratorTile extends BlockEntity {
 
 
     public void tick(Level level, BlockPos pos, BlockState state,GeneratorTile tile) {
+
         tick++;
         if (tick == 20){ this.second(level, pos, state, tile); tick = 0;}
     }
@@ -40,6 +41,8 @@ public abstract class GeneratorTile extends BlockEntity {
     public boolean isEnabled() {
         return enabled;
     }
+
+
 
     protected void second(Level level, BlockPos pos, BlockState state, GeneratorTile tile) {
         enabled = hasGessence();
@@ -120,7 +123,7 @@ public abstract class GeneratorTile extends BlockEntity {
 
     public abstract boolean generateItem();
 
-    protected void setGeneratorType(GeneratorType generatorType) {
+    public void setGeneratorType(GeneratorType generatorType) {
         this.generatorType = generatorType;
     }
 }

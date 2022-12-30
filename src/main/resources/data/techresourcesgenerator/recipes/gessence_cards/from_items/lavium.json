@@ -1,0 +1,6 @@
+{
+  "type": "techresourcesgenerator:card_infuser",
+  "base": "techresourcesgenerator:gessence_card",
+  "infuser": "techresourcesbase:lavium_block",
+  "result": "techresourcesgenerator:lavium_gessence_card"
+}

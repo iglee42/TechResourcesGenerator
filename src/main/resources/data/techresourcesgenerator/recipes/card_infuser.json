@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GDG",
+    "BLB",
+    "GDG"
+  ],
+  "key": {
+    "G": {
+      "item": "techresourcesgenerator:netherite_generator"
+    },
+    "D": {
+      "item": "techresourcesbase:derium_ingot"
+    },
+    "B": {
+      "item": "techresourcesgenerator:base_gessence"
+    },
+    "L": {
+      "item": "techresourcesbase:lavium_ingot"
+    }
+  },
+  "result": {
+    "item": "techresourcesgenerator:card_infuser"
+  }
+}

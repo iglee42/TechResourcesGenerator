@@ -2,6 +2,7 @@ package fr.iglee42.techresourcesgenerator.menu;
 
 import fr.iglee42.techresourcesgenerator.blocks.ModBlock;
 import fr.iglee42.techresourcesgenerator.menu.slots.BucketSlot;
+import fr.iglee42.techresourcesgenerator.menu.slots.GessenceSlot;
 import fr.iglee42.techresourcesgenerator.menu.slots.OutputSlot;
 import fr.iglee42.techresourcesgenerator.tiles.generator.MagmaticGeneratorTile;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
@@ -17,7 +18,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.items.SlotItemHandler;
 
 public class MagmaticGeneratorMenu extends AbstractContainerMenu {
     public MagmaticGeneratorTile blockEntity;
@@ -43,7 +43,7 @@ public class MagmaticGeneratorMenu extends AbstractContainerMenu {
         this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
             this.addSlot(new BucketSlot(handler, 0, 31, 15));
             this.addSlot(new OutputSlot(handler, 1, 31, 60));
-            this.addSlot(new SlotItemHandler(handler, 2, 67, 37));
+            this.addSlot(new GessenceSlot(handler, 2, 67, 37,blockEntity));
             this.addSlot(new OutputSlot(handler, 3, 135, 37));
         });
     }

@@ -15,6 +15,8 @@ public class ModMenuTypes {
 
     public static final RegistryObject<MenuType<MagmaticGeneratorMenu>> MAGMATIC_GENERATOR_MENU =
             registerMenuType(MagmaticGeneratorMenu::new, "magmatic_generator_menu");
+    public static final RegistryObject<MenuType<ElectricGeneratorMenu>> ELECTRIC_GENERATOR_MENU =
+            registerMenuType(ElectricGeneratorMenu::new, "electric_generator_menu");
 
 
     private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> registerMenuType(IContainerFactory<T> factory,

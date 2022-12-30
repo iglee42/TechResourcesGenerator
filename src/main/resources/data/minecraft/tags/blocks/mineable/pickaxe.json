@@ -4,6 +4,11 @@
     "techresourcesgenerator:iron_generator",
     "techresourcesgenerator:gold_generator",
     "techresourcesgenerator:diamond_generator",
-    "techresourcesgenerator:netherite_generator"
+    "techresourcesgenerator:netherite_generator",
+    "techresourcesgenerator:modium_generator",
+    "techresourcesgenerator:derium_generator",
+    "techresourcesgenerator:blazum_generator",
+    "techresourcesgenerator:lavium_generator",
+    "techresourcesgenerator:card_infuser"
   ]
 }

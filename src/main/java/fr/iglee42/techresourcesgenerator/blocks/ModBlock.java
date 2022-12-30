@@ -1,6 +1,7 @@
 package fr.iglee42.techresourcesgenerator.blocks;
 
 import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
+import fr.iglee42.techresourcesgenerator.blocks.generator.automatic.ElectricGenerator;
 import fr.iglee42.techresourcesgenerator.blocks.generator.manual.MagmaticGenerator;
 import fr.iglee42.techresourcesgenerator.blocks.generator.manual.ManualGenerator;
 import fr.iglee42.techresourcesgenerator.config.CommonConfigs;
@@ -18,12 +19,16 @@ import java.util.function.Supplier;
 public class ModBlock {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, TechResourcesGenerator.MODID);
-
     public static final RegistryObject<Block> BASIC_GENERATOR = createManualGenerator("basic");
     public static final RegistryObject<Block> IRON_GENERATOR = createMagmaticGenerator("iron", GeneratorType.IRON);
     public static final RegistryObject<Block> GOLD_GENERATOR = createMagmaticGenerator("gold", GeneratorType.GOLD);
     public static final RegistryObject<Block> DIAMOND_GENERATOR = createMagmaticGenerator("diamond", GeneratorType.DIAMOND);
     public static final RegistryObject<Block> NETHERITE_GENERATOR = createMagmaticGenerator("netherite", GeneratorType.NETHERITE);
+    public static final RegistryObject<Block> MODIUM_GENERATOR = createElectricGenerator("modium", GeneratorType.MODIUM);
+    public static final RegistryObject<Block> DERIUM_GENERATOR = createElectricGenerator("derium", GeneratorType.DERIUM);
+    public static final RegistryObject<Block> BLAZUM_GENERATOR = createElectricGenerator("blazum", GeneratorType.BLAZUM);
+    public static final RegistryObject<Block> LAVIUM_GENERATOR = createElectricGenerator("lavium", GeneratorType.LAVIUM);
+    public static final RegistryObject<Block> CARD_INFUSER = createBlock("card_infuser", () -> new BlockCardInfuser());
 
     public static RegistryObject<Block> createManualGenerator(String name){
         return createBlock(name + "_generator",()-> new ManualGenerator(GeneratorType.BASIC));
@@ -31,6 +36,10 @@ public class ModBlock {
 
     public static RegistryObject<Block> createMagmaticGenerator(String name, GeneratorType type){
         return createBlock(name + "_generator",()-> new MagmaticGenerator(type));
+    }
+
+    public static RegistryObject<Block> createElectricGenerator(String name, GeneratorType type){
+        return createBlock(name + "_generator",()-> new ElectricGenerator(type));
     }
 
     public static RegistryObject<Block> createBlock(String name, Supplier<? extends Block> supplier)

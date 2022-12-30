@@ -1,6 +1,10 @@
 {
   "replace": false,
   "values": [
-    "techresourcesgenerator:netherite_generator"
+    "techresourcesgenerator:netherite_generator",
+    "techresourcesgenerator:modium_generator",
+    "techresourcesgenerator:derium_generator",
+    "techresourcesgenerator:blazum_generator",
+    "techresourcesgenerator:lavium_generator"
   ]
 }

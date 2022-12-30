@@ -1,0 +1,6 @@
+{
+  "type": "techresourcesgenerator:card_infuser",
+  "base": "techresourcesgenerator:gessence_card",
+  "infuser": "techresourcesgenerator:cobblestone_gessence",
+  "result": "techresourcesgenerator:cobblestone_gessence_card"
+}

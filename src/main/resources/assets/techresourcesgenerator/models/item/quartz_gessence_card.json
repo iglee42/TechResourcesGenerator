@@ -1,0 +1,6 @@
+{
+	"parent": "techresourcesgenerator:item/gessence_card",
+	"textures": {
+		"1": "minecraft:item/quartz"
+	}
+}

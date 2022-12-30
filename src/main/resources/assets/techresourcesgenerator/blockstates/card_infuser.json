@@ -1,0 +1,33 @@
+{
+  "variants": {
+    "facing=north,has_item=false": {
+      "model": "techresourcesgenerator:block/card_infuser"
+    },
+    "facing=south,has_item=false": {
+      "model": "techresourcesgenerator:block/card_infuser",
+      "y": 180
+    },
+    "facing=west,has_item=false": {
+      "model": "techresourcesgenerator:block/card_infuser",
+      "y": 270
+    },
+    "facing=east,has_item=false": {
+      "model": "techresourcesgenerator:block/card_infuser",
+      "y": 90
+    },"facing=north,has_item=true": {
+      "model": "techresourcesgenerator:block/card_infuser_topitem"
+    },
+    "facing=south,has_item=true": {
+      "model": "techresourcesgenerator:block/card_infuser_topitem",
+      "y": 180
+    },
+    "facing=west,has_item=true": {
+      "model": "techresourcesgenerator:block/card_infuser_topitem",
+      "y": 270
+    },
+    "facing=east,has_item=true": {
+      "model": "techresourcesgenerator:block/card_infuser_topitem",
+      "y": 90
+    }
+  }
+}

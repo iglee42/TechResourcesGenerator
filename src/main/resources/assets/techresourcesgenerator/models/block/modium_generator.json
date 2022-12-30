@@ -1,8 +1,7 @@
 {
-	"parent": "techresourcesgenerator:block/manual_generator",
+	"parent": "techresourcesgenerator:block/electric_generator",
 	"textures": {
-		"2": "techresourcesgenerator:block/generator_base",
-		"1": "techresourcesgenerator:block/modium_block",
-		"particle": "techresourcesgenerator:block/modium_block"
+		"1": "techresourcesbase:block/modium_block",
+		"particle": "techresourcesbase:block/modium_block"
 	}
 }

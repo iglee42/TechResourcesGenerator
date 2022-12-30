@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "techresourcesgenerator:item/iron_gessence"
-  }
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "techresourcesgenerator:item/gessence/iron"
+	}
 }
