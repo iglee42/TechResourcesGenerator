@@ -1,11 +1,11 @@
 package fr.iglee42.techresourcesgenerator.tiles.generator;
 
 import fr.iglee42.techresourcesgenerator.items.ItemGessence;
-import fr.iglee42.techresourcesgenerator.network.packets.GeneratorGenerateReturnS2CPacket;
-import fr.iglee42.techresourcesgenerator.tiles.ModBlockEntities;
+import fr.iglee42.techresourcesgenerator.menu.MagmaticGeneratorMenu;
 import fr.iglee42.techresourcesgenerator.network.ModMessages;
 import fr.iglee42.techresourcesgenerator.network.packets.FluidSyncS2CPacket;
-import fr.iglee42.techresourcesgenerator.menu.MagmaticGeneratorMenu;
+import fr.iglee42.techresourcesgenerator.network.packets.GeneratorGenerateReturnS2CPacket;
+import fr.iglee42.techresourcesgenerator.tiles.ModBlockEntities;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
 import net.minecraft.ChatFormatting;
@@ -13,6 +13,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -26,11 +28,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
@@ -105,7 +108,7 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
                         setChanged();
                         itemHandler.setStackInSlot(0, ItemStack.EMPTY);
                         itemHandler.setStackInSlot(1, new ItemStack(Items.BUCKET));
-                    } else if (slot2.getCount() < Items.BUCKET.getMaxStackSize(slot2)) {
+                    } else if (slot2.getCount() < Items.BUCKET.getMaxStackSize()) {
                         setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
                         setChanged();
                         itemHandler.setStackInSlot(0, ItemStack.EMPTY);
@@ -152,7 +155,7 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
     private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
-        return cap == ForgeCapabilities.ITEM_HANDLER ? lazyItemHandler.cast() : (cap == ForgeCapabilities.FLUID_HANDLER ? lazyFluidHandler.cast() : super.getCapability(cap,side));
+        return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? lazyItemHandler.cast() : (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? lazyFluidHandler.cast() : super.getCapability(cap,side));
     }
 
     @Override
@@ -180,31 +183,31 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
     @Override
     public boolean generateItem() {
         if (ItemGessence.isElectronicGessence(this.itemHandler.getStackInSlot(2).getItem())){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.translatable("tooltip.techresourcesgenerator.dontaccept").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.dontaccept").withStyle(ChatFormatting.RED),worldPosition));
             return false;
         }
         if (!this.hasGessence()){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.translatable("tooltip.techresourcesgenerator.no_gessence").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.no_gessence").withStyle(ChatFormatting.RED),worldPosition));
             return false;
         } else if (getGessence().getMinimumGenerator().getOrder() > getGeneratorType().getOrder()){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.translatable("tooltip.techresourcesgenerator.gessence_not_compatible").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.gessence_not_compatible").withStyle(ChatFormatting.RED),worldPosition));
             return false;
         }
         if (itemHandler.getStackInSlot(3).isEmpty()) {
             itemHandler.setStackInSlot(3, new ItemStack(this.getGessence().getItem(), this.getItemsDropped()));
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.empty(),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TextComponent(""),worldPosition));
             return true;
         } else if (itemHandler.getStackInSlot(3).is(this.getGessence().getItem())) {
             if (itemHandler.getStackInSlot(3).getMaxStackSize() >= (itemHandler.getStackInSlot(3).getCount() + getItemsDropped())) {
                 itemHandler.setStackInSlot(3, new ItemStack(this.getGessence().getItem(), itemHandler.getStackInSlot(3).getCount() + this.getItemsDropped()));
-                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.empty(),worldPosition));
+                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TextComponent(""),worldPosition));
                 return true;
             } else {
-                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.translatable("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
+                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
                 return false;
             }
         } else
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.translatable("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
         return false;
     }
 
@@ -230,7 +233,7 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
 
     @Override
     public Component getDisplayName() {
-        return Component.literal("Magmatic Generator");
+        return new TextComponent("Magmatic Generator");
     }
 
     @Nullable

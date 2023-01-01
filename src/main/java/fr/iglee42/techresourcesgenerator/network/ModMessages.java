@@ -29,47 +29,47 @@ public class ModMessages {
         net.messageBuilder(FluidSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(FluidSyncS2CPacket::new)
                 .encoder(FluidSyncS2CPacket::toBytes)
-                .consumerMainThread(FluidSyncS2CPacket::handle)
+                .consumer(FluidSyncS2CPacket::handle)
                 .add();
         net.messageBuilder(EnergySyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(EnergySyncS2CPacket::new)
                 .encoder(EnergySyncS2CPacket::toBytes)
-                .consumerMainThread(EnergySyncS2CPacket::handle)
+                .consumer(EnergySyncS2CPacket::handle)
                 .add();
         net.messageBuilder(ItemStackSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(ItemStackSyncS2CPacket::new)
                 .encoder(ItemStackSyncS2CPacket::toBytes)
-                .consumerMainThread(ItemStackSyncS2CPacket::handle)
+                .consumer(ItemStackSyncS2CPacket::handle)
                 .add();
         net.messageBuilder(CardInfuserProgressSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(CardInfuserProgressSyncS2CPacket::new)
                 .encoder(CardInfuserProgressSyncS2CPacket::toBytes)
-                .consumerMainThread(CardInfuserProgressSyncS2CPacket::handle)
+                .consumer(CardInfuserProgressSyncS2CPacket::handle)
                 .add();
         net.messageBuilder(GeneratorTypeSyncS2C.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(GeneratorTypeSyncS2C::new)
                 .encoder(GeneratorTypeSyncS2C::toBytes)
-                .consumerMainThread(GeneratorTypeSyncS2C::handle)
+                .consumer(GeneratorTypeSyncS2C::handle)
                 .add();
         net.messageBuilder(GeneratorDelaySyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(GeneratorDelaySyncS2CPacket::new)
                 .encoder(GeneratorDelaySyncS2CPacket::toBytes)
-                .consumerMainThread(GeneratorDelaySyncS2CPacket::handle)
+                .consumer(GeneratorDelaySyncS2CPacket::handle)
                 .add();
         net.messageBuilder(GeneratorDelaySyncC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(GeneratorDelaySyncC2SPacket::new)
                 .encoder(GeneratorDelaySyncC2SPacket::toBytes)
-                .consumerMainThread(GeneratorDelaySyncC2SPacket::handle)
+                .consumer(GeneratorDelaySyncC2SPacket::handle)
                 .add();
         net.messageBuilder(GeneratorGenerateActionC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(GeneratorGenerateActionC2SPacket::new)
                 .encoder(GeneratorGenerateActionC2SPacket::toBytes)
-                .consumerMainThread(GeneratorGenerateActionC2SPacket::handle)
+                .consumer(GeneratorGenerateActionC2SPacket::handle)
                 .add();
         net.messageBuilder(GeneratorGenerateReturnS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(GeneratorGenerateReturnS2CPacket::new)
                 .encoder(GeneratorGenerateReturnS2CPacket::toBytes)
-                .consumerMainThread(GeneratorGenerateReturnS2CPacket::handle)
+                .consumer(GeneratorGenerateReturnS2CPacket::handle)
                 .add();
 
     }

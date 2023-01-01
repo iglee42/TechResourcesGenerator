@@ -8,6 +8,7 @@ import fr.iglee42.techresourcesgenerator.tiles.generator.MagmaticGeneratorTile;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -16,15 +17,15 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public class MagmaticGeneratorMenu extends AbstractContainerMenu {
     public MagmaticGeneratorTile blockEntity;
     private final Level level;
     private FluidStack fluidStack;
     private float delay;
-    private Component errorMessage = Component.empty();
+    private Component errorMessage = new TextComponent("");
 
     private GeneratorType generator;
 
@@ -40,7 +41,7 @@ public class MagmaticGeneratorMenu extends AbstractContainerMenu {
         this.generator = generator;
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
-        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+        this.blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
             this.addSlot(new BucketSlot(handler, 0, 31, 15));
             this.addSlot(new OutputSlot(handler, 1, 31, 60));
             this.addSlot(new GessenceSlot(handler, 2, 67, 37,blockEntity));

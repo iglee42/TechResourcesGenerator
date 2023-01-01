@@ -69,22 +69,24 @@ public class ElectricGeneratorScreen extends AbstractContainerScreen<ElectricGen
 
         renderer.draw(pPoseStack);
         renderProgressArrow(pPoseStack,x,y);
+
     }
 
     @Override
     public void render(PoseStack pPoseStack, int mouseX, int mouseY, float delta) {
+        int x = (width - imageWidth) / 2;
+        int y = (height - imageHeight) / 2;
         renderBackground(pPoseStack);
         super.render(pPoseStack, mouseX, mouseY, delta);
         renderTooltip(pPoseStack, mouseX, mouseY);
         ModMessages.sendToServer(new GeneratorDelaySyncC2SPacket(menu.blockEntity.getBlockPos()));
-        int x = (width - imageWidth) / 2;
-        int y = (height - imageHeight) / 2;
+
         drawCenteredString(pPoseStack,font,menu.getErrorMessage(),x + 110 , y +20,ChatFormatting.RED.getColor());
     }
 
 
     private void renderProgressArrow(PoseStack pPoseStack, int x, int y) {
-        if(menu.getDelay() < ConfigsForType.getConfigForType(menu.getGeneratorType()).getDelay()) {
+        if(menu.getDelay() <= ConfigsForType.getConfigForType(menu.blockEntity.getGeneratorType()).getDelay()) {
             blit(pPoseStack, x + 87 , y + 41, 176, 0, menu.getScaledProgress(), 8);
         }
     }

@@ -1,7 +1,6 @@
 package fr.iglee42.techresourcesgenerator.client.renderer.blockentities;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import fr.iglee42.techresourcesgenerator.blocks.BlockCardInfuser;
 import fr.iglee42.techresourcesgenerator.tiles.CardInfuserTile;
@@ -12,7 +11,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -24,7 +23,7 @@ public class CardInfuserRenderer implements BlockEntityRenderer<CardInfuserTile>
     @Override
     public void render(CardInfuserTile tile, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
         AtomicReference<ItemStack> gessence = new AtomicReference<>(ItemStack.EMPTY);
-        tile.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> gessence.set(h.getStackInSlot(0)));
+        tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> gessence.set(h.getStackInSlot(0)));
 
         if (gessence.get() != null && !gessence.get().isEmpty() && tile.getProgress() < 6) {
             poseStack.pushPose();
@@ -38,7 +37,7 @@ public class CardInfuserRenderer implements BlockEntityRenderer<CardInfuserTile>
             poseStack.popPose();
         }
         AtomicReference<ItemStack> card = new AtomicReference<>(ItemStack.EMPTY);
-        tile.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> card.set(h.getStackInSlot(1)));
+        tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> card.set(h.getStackInSlot(1)));
         if (card.get() != null  && !card.get().isEmpty()){
             poseStack.pushPose();
             poseStack.translate(0.5D, 0.47D, 0.5D);

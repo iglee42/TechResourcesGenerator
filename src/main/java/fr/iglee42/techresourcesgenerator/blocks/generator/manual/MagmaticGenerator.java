@@ -7,6 +7,7 @@ import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -37,7 +38,7 @@ public class MagmaticGenerator extends GeneratorBlock {
     @Override
     public void appendHoverText(ItemStack it, @Nullable BlockGetter getter, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(it, getter, list, flag);
-        list.add(Component.literal("Use lava to generate items").withStyle(ChatFormatting.YELLOW));
+        list.add(new TextComponent("Use lava to generate items").withStyle(ChatFormatting.YELLOW));
     }
 
 }

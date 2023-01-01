@@ -7,6 +7,7 @@ import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -32,7 +33,7 @@ public class ElectricGenerator extends GeneratorBlock {
     @Override
     public void appendHoverText(ItemStack it, @Nullable BlockGetter getter, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(it, getter, list, flag);
-        list.add(Component.literal("Use energy to generate items").withStyle(ChatFormatting.YELLOW));
+        list.add(new TextComponent("Use energy to generate items").withStyle(ChatFormatting.YELLOW));
     }
 
 }

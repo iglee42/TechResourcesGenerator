@@ -10,8 +10,7 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -49,13 +48,13 @@ public class JEIPlugin implements IModPlugin {
                         .stream()
                         .map(r -> (CardInfuserRecipe) r)
                         .collect(Collectors.toList()));
-        registration.addIngredientInfo(new ItemStack(ModBlock.BASIC_GENERATOR.get()),VanillaTypes.ITEM_STACK,Component.literal("Right click with a gessence to put in the generator. \n\nSneak + Right Click to remove the gessence in the generator \n\nRight click with an empty hand to decrease the delay."));
+        registration.addIngredientInfo(new ItemStack(ModBlock.BASIC_GENERATOR.get()),VanillaTypes.ITEM_STACK,new TextComponent("Right click with a gessence to put in the generator. \n\nSneak + Right Click to remove the gessence in the generator \n\nRight click with an empty hand to decrease the delay."));
         List<Block> generator = Arrays.asList(ModBlock.IRON_GENERATOR.get(),ModBlock.GOLD_GENERATOR.get(),ModBlock.DIAMOND_GENERATOR.get(),ModBlock.NETHERITE_GENERATOR.get(),
                 ModBlock.MODIUM_GENERATOR.get(),ModBlock.DERIUM_GENERATOR.get(),ModBlock.BLAZUM_GENERATOR.get(),ModBlock.LAVIUM_GENERATOR.get());
         List<ItemStack> stacks = new ArrayList<>();
         generator.forEach(g->stacks.add(new ItemStack(g)));
-        registration.addIngredientInfo(stacks,VanillaTypes.ITEM_STACK,Component.literal("Right click to open the gui"));
+        registration.addIngredientInfo(stacks,VanillaTypes.ITEM_STACK,new TextComponent("Right click to open the gui"));
 
-        registration.addIngredientInfo(new ItemStack(ModBlock.CARD_INFUSER.get()),VanillaTypes.ITEM_STACK,Component.literal("Right Click with an item on the top to give him. \n \n Right click with an item on the front to give. \n\n You can retrive items with a sneak + right click. You can get the result of a craft with a sneak right click on the bottom. \n \n You can also place a sign in his back to get informations."));
+        registration.addIngredientInfo(new ItemStack(ModBlock.CARD_INFUSER.get()),VanillaTypes.ITEM_STACK,new TextComponent("Right Click with an item on the top to give him. \n \n Right click with an item on the front to give. \n\n You can retrive items with a sneak + right click. You can get the result of a craft with a sneak right click on the bottom. \n \n You can also place a sign in his back to get informations."));
     }
 }

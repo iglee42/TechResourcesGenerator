@@ -11,7 +11,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModBlockEntities {
-    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, TechResourcesGenerator.MODID);
+    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, TechResourcesGenerator.MODID);
 
     public static final RegistryObject<BlockEntityType<CardInfuserTile>> CARD_INFUSER = TILE_ENTITIES.register("card_infuser_tile",()-> BlockEntityType.Builder.of(CardInfuserTile::new,ModBlock.CARD_INFUSER.get()).build(null));
     public static final RegistryObject<BlockEntityType<ManualGeneratorTile>> MANUAL_GENERATOR =TILE_ENTITIES.register("manual_generator_tile",() -> BlockEntityType.Builder.of(ManualGeneratorTile::new, ModBlock.BASIC_GENERATOR.get()).build(null));

@@ -11,7 +11,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
@@ -26,8 +27,8 @@ import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
@@ -59,30 +60,30 @@ public class CardInfuserTile extends SecondBlockEntity {
         if (level.getBlockState(blockPos.relative(blockState.getValue(BlockCardInfuser.FACING).getOpposite(),1)).getBlock() instanceof WallSignBlock &&
             level.getBlockEntity(blockPos.relative(blockState.getValue(BlockCardInfuser.FACING).getOpposite(),1)) instanceof SignBlockEntity sign &&
             level.getBlockState(blockPos.relative(blockState.getValue(BlockCardInfuser.FACING).getOpposite(),1)).getValue(WallSignBlock.FACING).getOpposite() == blockState.getValue(BlockCardInfuser.FACING)){
-            sign.setMessage(0,Component.empty());
-            sign.setMessage(1,Component.empty());
-            sign.setMessage(2,Component.empty());
-            sign.setMessage(3,Component.empty());
+            sign.setMessage(0,new TextComponent(""));
+            sign.setMessage(1,new TextComponent(""));
+            sign.setMessage(2,new TextComponent(""));
+            sign.setMessage(3,new TextComponent(""));
             if (!itemHandler.getStackInSlot(2).isEmpty()){
-                sign.setMessage(1,Component.literal("The output slot"));
-                sign.setMessage(2,Component.literal("is full"));
+                sign.setMessage(1,new TextComponent("The output slot"));
+                sign.setMessage(2,new TextComponent("is full"));
                 sign.setColor(DyeColor.RED);
                 sign.setHasGlowingText(true);
             }
             else if (active){
-                sign.setMessage(0,Component.literal("Active"));
-                sign.setMessage(1,Component.literal("Progress : " + progress));
-                sign.setMessage(2, Component.literal("Recipe :"));
-                sign.setMessage(3, Component.translatable(recipe.getResult().getItems()[0].getDescriptionId()));
+                sign.setMessage(0,new TextComponent("Active"));
+                sign.setMessage(1,new TextComponent("Progress : " + progress));
+                sign.setMessage(2, new TextComponent("Recipe :"));
+                sign.setMessage(3, new TranslatableComponent(recipe.getResult().getItems()[0].getDescriptionId()));
                 sign.setColor(DyeColor.LIME);
                 sign.setHasGlowingText(true);
             } else {
                 if (recipe == null && !itemHandler.getStackInSlot(0).isEmpty() && !itemHandler.getStackInSlot(1).isEmpty()){
-                    sign.setMessage(1,Component.literal("Invalid Recipe"));
+                    sign.setMessage(1,new TextComponent("Invalid Recipe"));
                     sign.setColor(DyeColor.RED);
                     sign.setHasGlowingText(true);
                 } else {
-                    sign.setMessage(1,Component.literal("Inactive"));
+                    sign.setMessage(1,new TextComponent("Inactive"));
                     sign.setColor(DyeColor.ORANGE);
                     sign.setHasGlowingText(true);
                 }
@@ -96,11 +97,10 @@ public class CardInfuserTile extends SecondBlockEntity {
             inventory.setItem(i, itemHandler.getStackInSlot(i));
         }
         if (this.recipe == null || !this.recipe.matches(inventory,this.level)) {
-            var recipe = this.level.getRecipeManager()
+
+            this.recipe = this.level.getRecipeManager()
                     .getRecipeFor(CardInfuserRecipe.Type.INSTANCE, inventory, this.level)
                     .orElse(null);
-
-            this.recipe = recipe != null ? recipe : null;
         }
 
         active = !itemHandler.getStackInSlot(0).isEmpty() && !itemHandler.getStackInSlot(1).isEmpty() && itemHandler.getStackInSlot(2).isEmpty() && this.recipe != null;
@@ -134,32 +134,101 @@ public class CardInfuserTile extends SecondBlockEntity {
     }
 
     public void tick(Level level, BlockPos pos, BlockState state){
-        super.tick(level,pos,state,this);
+        SecondBlockEntity.tick(level,pos,state,this);
         if (active){
             Vec3 bpos = Vec3.atCenterOf(this.getBlockPos()).add(0,-0.5,0);
 
             //TO BRANCHS
             if (progress <= 5) {
-                spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
-                spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                switch (state.getValue(BlockCardInfuser.FACING)){
+                    case SOUTH -> {
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
 
-                spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
-                spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
 
-                spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
-                spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+                    }
+                    case NORTH ->{
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, 0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, 0.8), itemHandler.getStackInSlot(0));
+                    }
+                    case WEST ->{
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, 0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, 0.8), itemHandler.getStackInSlot(0));
+                    }
+                    case EAST ->{
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, 0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, 0.8), itemHandler.getStackInSlot(0));
+                    }
+                }
+
                 //spawnItemParticles(bpos.add(0,0.8,0),bpos.add(0,1.9,0.8), itemHandler.getStackInSlot(0));
             }
             //TO CORE
             if (progress > 5 && progress <= 10) {
-                spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
-                spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                switch(state.getValue(BlockCardInfuser.FACING)){
+                    case NORTH -> {
+                        spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
 
-                spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
-                spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
 
-                spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
-                spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, 0.8), bpos.add(0, 0.1, 0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, 0.8), bpos.add(0, 0.1, 0.4), itemHandler.getStackInSlot(0));
+                    }
+                    case SOUTH -> {
+                        spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                    }
+                    case EAST -> {
+                        spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 1.2, 0.8), bpos.add(0, 0.1, 0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, 0.8), bpos.add(0, 0.1, 0.4), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                    }
+                    case WEST -> {
+                        spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 1.2, 0.8), bpos.add(0, 0.1, 0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, 0.8), bpos.add(0, 0.1, 0.4), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                    }
+                }
             }
         }
     }
@@ -202,7 +271,7 @@ public class CardInfuserTile extends SecondBlockEntity {
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
-        return cap == ForgeCapabilities.ITEM_HANDLER ? lazyItemHandler.cast() : super.getCapability(cap,side);
+        return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? lazyItemHandler.cast() : super.getCapability(cap,side);
     }
     @Override
     public void invalidateCaps() {

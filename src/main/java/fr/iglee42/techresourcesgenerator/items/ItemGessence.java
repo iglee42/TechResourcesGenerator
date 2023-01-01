@@ -1,10 +1,11 @@
 package fr.iglee42.techresourcesgenerator.items;
 
-import fr.iglee42.techresourcesbase.utils.ModsUtils;
+import fr.iglee42.techresourcesbase.api.utils.ModsUtils;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -41,8 +42,8 @@ public class ItemGessence extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level p_41422_, List<Component> components, TooltipFlag p_41424_) {
         super.appendHoverText(stack, p_41422_, components, p_41424_);
-        components.add(Component.literal("Miniumum Generator Tier : ").withStyle(ChatFormatting.YELLOW)
-                .append(Component.literal(ModsUtils.getUpperName(!(isElectronicGessence(stack.getItem())) ? type.getMinimumGenerator().name().toLowerCase() :
+        components.add(new TextComponent("Miniumum Generator Tier : ").withStyle(ChatFormatting.YELLOW)
+                .append(new TextComponent(ModsUtils.getUpperName(!(isElectronicGessence(stack.getItem())) ? type.getMinimumGenerator().name().toLowerCase() :
                         (type.getMinimumGenerator().getOrder() < GeneratorType.MODIUM.getOrder() ? GeneratorType.MODIUM.name().toLowerCase() : type.name().toLowerCase())
                         , " ")).withStyle(ChatFormatting.GOLD)));
     }
