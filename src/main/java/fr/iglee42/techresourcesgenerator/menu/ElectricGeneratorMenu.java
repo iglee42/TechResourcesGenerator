@@ -51,12 +51,11 @@ public class ElectricGeneratorMenu extends AbstractContainerMenu {
     }
 
     public int getScaledProgress() {
-        ModMessages.sendToServer(new GeneratorDelaySyncC2SPacket(blockEntity.getBlockPos()));
         int progress = (int)getDelay();
-        int maxProgress = ConfigsForType.getConfigForType(generator).getDelay();  // Max Progress 3
-        int progressArrowSize = 255; // This is the height in pixels of your arrow
+        int maxProgress = ConfigsForType.getConfigForType(blockEntity.getGeneratorType()).getDelay();   // Max Progress 3
+        int progressArrowSize = 50; // This is the height in pixels of your arrow
 
-        return maxProgress != 0 && progress != 0 ? progress * (progressArrowSize / maxProgress) : 0;
+        return maxProgress != 0 ? progress * (progressArrowSize / maxProgress) : 0;
     }
 
 

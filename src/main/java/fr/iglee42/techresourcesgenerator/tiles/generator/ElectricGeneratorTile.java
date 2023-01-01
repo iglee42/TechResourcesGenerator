@@ -70,10 +70,10 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
             this.enabled = hasEnoughtEnergyForAllProcess() && getDelay() > 0;
         }
         if (getDelay() == 0){
+            this.enabled = false;
             if (generateItem()){
                 progress = 0;
                 resetDelay();
-                this.enabled = false;
             }
         }
         if (isEnabled() && getEnergyStorage().extractEnergy(ConfigsForType.getConfigForType(getGeneratorType()).getConsumeFE(),true) > 0){
@@ -81,7 +81,8 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
             progress++;
             getEnergyStorage().extractEnergy(ConfigsForType.getConfigForType(getGeneratorType()).getConsumeFE(),false);
             setChanged();
-
+            ModMessages.sendToClients(new GeneratorDelaySyncS2CPacket(getProgress(),pos));
+            ModMessages.sendToClients(new GeneratorTypeSyncS2C(getGeneratorType(),pos));
         }
 
     }

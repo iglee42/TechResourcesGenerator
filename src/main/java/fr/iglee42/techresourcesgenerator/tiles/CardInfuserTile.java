@@ -4,6 +4,8 @@ import fr.iglee42.techresourcesbase.api.blockentities.SecondBlockEntity;
 import fr.iglee42.techresourcesgenerator.blocks.BlockCardInfuser;
 import fr.iglee42.techresourcesgenerator.network.ModMessages;
 import fr.iglee42.techresourcesgenerator.network.packets.CardInfuserProgressSyncS2CPacket;
+import fr.iglee42.techresourcesgenerator.network.packets.GeneratorDelaySyncS2CPacket;
+import fr.iglee42.techresourcesgenerator.network.packets.GeneratorTypeSyncS2C;
 import fr.iglee42.techresourcesgenerator.network.packets.ItemStackSyncS2CPacket;
 import fr.iglee42.techresourcesgenerator.recipes.CardInfuserRecipe;
 import net.minecraft.core.BlockPos;
@@ -96,11 +98,9 @@ public class CardInfuserTile extends SecondBlockEntity {
             inventory.setItem(i, itemHandler.getStackInSlot(i));
         }
         if (this.recipe == null || !this.recipe.matches(inventory,this.level)) {
-            var recipe = this.level.getRecipeManager()
+            this.recipe = this.level.getRecipeManager()
                     .getRecipeFor(CardInfuserRecipe.Type.INSTANCE, inventory, this.level)
                     .orElse(null);
-
-            this.recipe = recipe != null ? recipe : null;
         }
 
         active = !itemHandler.getStackInSlot(0).isEmpty() && !itemHandler.getStackInSlot(1).isEmpty() && itemHandler.getStackInSlot(2).isEmpty() && this.recipe != null;
@@ -122,6 +122,7 @@ public class CardInfuserTile extends SecondBlockEntity {
             extractItemForce(1);
             insertItemForce(2,new ItemStack(recipe.getResult().getItems()[0].getItem(),1));
             this.recipe = null;
+
         }
     }
 
@@ -140,27 +141,93 @@ public class CardInfuserTile extends SecondBlockEntity {
 
             //TO BRANCHS
             if (progress <= 5) {
-                spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
-                spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                switch (state.getValue(BlockCardInfuser.FACING)){
+                    case SOUTH -> {
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
 
-                spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
-                spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
 
-                spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
-                spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
-                //spawnItemParticles(bpos.add(0,0.8,0),bpos.add(0,1.9,0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+                    }
+                    case NORTH ->{
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, 0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, 0.8), itemHandler.getStackInSlot(0));
+                    }
+                    case WEST ->{
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, 0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, 0.8), itemHandler.getStackInSlot(0));
+                    }
+                    case EAST ->{
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(-0.8, 1.8, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, -0.8), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, 0.8), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 0.8, 0), bpos.add(0, 1.8, 0.8), itemHandler.getStackInSlot(0));
+                    }
+                }                //spawnItemParticles(bpos.add(0,0.8,0),bpos.add(0,1.9,0.8), itemHandler.getStackInSlot(0));
             }
             //TO CORE
             if (progress > 5 && progress <= 10) {
-                spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
-                spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                switch(state.getValue(BlockCardInfuser.FACING)){
+                    case NORTH -> {
+                        spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
 
-                spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
-                spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
 
-                spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
-                spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
-            }
+                        spawnItemParticles(bpos.add(0, 1.2, 0.8), bpos.add(0, 0.1, 0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, 0.8), bpos.add(0, 0.1, 0.4), itemHandler.getStackInSlot(0));
+                    }
+                    case SOUTH -> {
+                        spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                    }
+                    case EAST -> {
+                        spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(-0.8, 1.2, 0), bpos.add(-0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 1.2, 0.8), bpos.add(0, 0.1, 0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, 0.8), bpos.add(0, 0.1, 0.4), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                    }
+                    case WEST -> {
+                        spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0.8, 1.2, 0), bpos.add(0.4, 0.1, 0), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 1.2, 0.8), bpos.add(0, 0.1, 0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, 0.8), bpos.add(0, 0.1, 0.4), itemHandler.getStackInSlot(0));
+
+                        spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                        spawnItemParticles(bpos.add(0, 1.2, -0.8), bpos.add(0, 0.1, -0.4), itemHandler.getStackInSlot(0));
+                    }
+                }            }
         }
     }
 
