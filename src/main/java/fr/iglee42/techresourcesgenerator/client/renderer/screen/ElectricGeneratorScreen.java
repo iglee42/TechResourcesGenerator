@@ -84,7 +84,7 @@ public class ElectricGeneratorScreen extends AbstractContainerScreen<ElectricGen
 
 
     private void renderProgressArrow(PoseStack pPoseStack, int x, int y) {
-        if(menu.getDelay() < ConfigsForType.getConfigForType(menu.getGeneratorType()).getDelay()) {
+        if(menu.getDelay() <= ConfigsForType.getConfigForType(menu.blockEntity.getGeneratorType()).getDelay()) {
             blit(pPoseStack, x + 87 , y + 41, 176, 0, menu.getScaledProgress(), 8);
         }
     }
