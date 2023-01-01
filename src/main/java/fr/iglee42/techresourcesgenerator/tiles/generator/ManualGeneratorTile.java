@@ -1,25 +1,22 @@
 package fr.iglee42.techresourcesgenerator.tiles.generator;
 
-import fr.iglee42.techresourcesgenerator.config.CommonConfigs;
 import fr.iglee42.techresourcesgenerator.tiles.ModBlockEntities;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class ManualGeneratorTile extends GeneratorTile {
 
-    public ManualGeneratorTile( BlockState state, BlockPos pos) {
-        super(ModBlockEntities.MANUAL_GENERATOR.get(), state, pos, GeneratorType.BASIC);
-    }
-    public ManualGeneratorTile(BlockPos pos,BlockState state) {
-        this(state, pos);
+    public ManualGeneratorTile() {
+        super(ModBlockEntities.MANUAL_GENERATOR.get(), GeneratorType.BASIC);
     }
 
+
     @Override
-    protected void second(Level level, BlockPos pos, BlockState state, GeneratorTile tile) {
+    protected void second(World level, BlockPos pos, BlockState state, GeneratorTile tile) {
     }
 
     @Override

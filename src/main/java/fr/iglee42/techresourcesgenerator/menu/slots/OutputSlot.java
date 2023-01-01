@@ -1,9 +1,10 @@
 package fr.iglee42.techresourcesgenerator.menu.slots;
 
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class OutputSlot extends SlotItemHandler {
     public OutputSlot(IItemHandler handler, int id, int x, int y) {
@@ -11,7 +12,7 @@ public class OutputSlot extends SlotItemHandler {
     }
 
     @Override
-    public boolean mayPlace(@NotNull ItemStack stack) {
+    public boolean mayPlace(@Nonnull ItemStack stack) {
         return false;
     }
 }

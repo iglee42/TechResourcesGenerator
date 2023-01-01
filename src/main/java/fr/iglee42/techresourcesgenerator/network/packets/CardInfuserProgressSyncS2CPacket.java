@@ -2,9 +2,9 @@ package fr.iglee42.techresourcesgenerator.network.packets;
 
 import fr.iglee42.techresourcesgenerator.tiles.CardInfuserTile;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -17,12 +17,12 @@ public class CardInfuserProgressSyncS2CPacket {
         this.pos = pos;
     }
 
-    public CardInfuserProgressSyncS2CPacket(FriendlyByteBuf buf) {
+    public CardInfuserProgressSyncS2CPacket(PacketBuffer  buf) {
         this.progress = buf.readInt();
         this.pos = buf.readBlockPos();
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeInt(progress);
         buf.writeBlockPos(pos);
     }
@@ -30,7 +30,8 @@ public class CardInfuserProgressSyncS2CPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-                if (Minecraft.getInstance().level.getBlockEntity(pos) instanceof CardInfuserTile te){
+                if (Minecraft.getInstance().level.getBlockEntity(pos) instanceof CardInfuserTile){
+                    CardInfuserTile te = (CardInfuserTile) Minecraft.getInstance().level.getBlockEntity(pos);
                     te.setProgress(progress);
                 }
         });

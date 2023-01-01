@@ -2,10 +2,10 @@ package fr.iglee42.techresourcesgenerator.utils;
 
 import fr.iglee42.techresourcesbase.TechResourcesBase;
 import fr.iglee42.techresourcesgenerator.items.ItemGessence;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;
@@ -59,7 +59,7 @@ public enum GessenceType {
     }
 
 
-    public static boolean isGeneratorValidForGessence(ItemStack stack,GeneratorType type){
+    public static boolean isGeneratorValidForGessence(ItemStack stack, GeneratorType type){
         return getByItem(stack.getItem()).getMinimumGenerator().getOrder() <= type.getOrder();
     }
 

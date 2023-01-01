@@ -1,37 +1,36 @@
 package fr.iglee42.techresourcesgenerator;
 
-import fr.iglee42.techresourcesgenerator.blocks.ModBlock;
+import fr.iglee42.techresourcesgenerator.blocks.ModBlocks;
 import fr.iglee42.techresourcesgenerator.client.renderer.blockentities.CardInfuserRenderer;
 import fr.iglee42.techresourcesgenerator.client.renderer.blockentities.ElectricGeneratorRenderer;
 import fr.iglee42.techresourcesgenerator.client.renderer.screen.ElectricGeneratorScreen;
-import fr.iglee42.techresourcesgenerator.config.CommonConfigs;
-import fr.iglee42.techresourcesgenerator.network.ModMessages;
 import fr.iglee42.techresourcesgenerator.client.renderer.screen.MagmaticGeneratorScreen;
+import fr.iglee42.techresourcesgenerator.config.CommonConfigs;
+import fr.iglee42.techresourcesgenerator.items.ModItem;
 import fr.iglee42.techresourcesgenerator.menu.ModMenuTypes;
+import fr.iglee42.techresourcesgenerator.network.ModMessages;
 import fr.iglee42.techresourcesgenerator.recipes.ModRecipes;
 import fr.iglee42.techresourcesgenerator.tiles.ModBlockEntities;
-import fr.iglee42.techresourcesgenerator.items.ModItem;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
-import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.RegistryObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Arrays;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(TechResourcesGenerator.MODID)
@@ -40,18 +39,18 @@ public class TechResourcesGenerator {
     public static final String MODID = "techresourcesgenerator";
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static final CreativeModeTab GENERATOR_GROUP = new CreativeModeTab(TechResourcesGenerator.MODID + ".generator") {
+    public static final ItemGroup GENERATOR_GROUP = new ItemGroup(TechResourcesGenerator.MODID + ".generator") {
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(ModBlock.BASIC_GENERATOR.get());
+            return new ItemStack(ModBlocks.BASIC_GENERATOR.get());
         }
         @Override
         public void fillItemList(NonNullList<ItemStack> stacks) {
-            stacks.add(new ItemStack(ModBlock.BASIC_GENERATOR.get()));
-            stacks.add(new ItemStack(ModBlock.IRON_GENERATOR.get()));
-            stacks.add(new ItemStack(ModBlock.GOLD_GENERATOR.get()));
-            stacks.add(new ItemStack(ModBlock.DIAMOND_GENERATOR.get()));
-            stacks.add(new ItemStack(ModBlock.NETHERITE_GENERATOR.get()));
+            stacks.add(new ItemStack(ModBlocks.BASIC_GENERATOR.get()));
+            stacks.add(new ItemStack(ModBlocks.IRON_GENERATOR.get()));
+            stacks.add(new ItemStack(ModBlocks.GOLD_GENERATOR.get()));
+            stacks.add(new ItemStack(ModBlocks.DIAMOND_GENERATOR.get()));
+            stacks.add(new ItemStack(ModBlocks.NETHERITE_GENERATOR.get()));
             for (RegistryObject<Item> it : ModItem.ITEMS.getEntries()){
                 if (it.getId().getPath().endsWith("generator")) continue;
                 if (it.getId().getPath().endsWith("card")) continue;
@@ -59,18 +58,18 @@ public class TechResourcesGenerator {
             }
         }
     };
-    public static final CreativeModeTab CARDS_GROUP = new CreativeModeTab(TechResourcesGenerator.MODID + ".cards") {
+    public static final ItemGroup CARDS_GROUP = new ItemGroup(TechResourcesGenerator.MODID + ".cards") {
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(ModBlock.MODIUM_GENERATOR.get());
+            return new ItemStack(ModBlocks.MODIUM_GENERATOR.get());
         }
 
         @Override
         public void fillItemList(NonNullList<ItemStack> stacks) {
-            stacks.add(new ItemStack(ModBlock.MODIUM_GENERATOR.get()));
-            stacks.add(new ItemStack(ModBlock.DERIUM_GENERATOR.get()));
-            stacks.add(new ItemStack(ModBlock.BLAZUM_GENERATOR.get()));
-            stacks.add(new ItemStack(ModBlock.LAVIUM_GENERATOR.get()));
+            stacks.add(new ItemStack(ModBlocks.MODIUM_GENERATOR.get()));
+            stacks.add(new ItemStack(ModBlocks.DERIUM_GENERATOR.get()));
+            stacks.add(new ItemStack(ModBlocks.BLAZUM_GENERATOR.get()));
+            stacks.add(new ItemStack(ModBlocks.LAVIUM_GENERATOR.get()));
             for (RegistryObject<Item> it : ModItem.ITEMS.getEntries()) {
                 if (it.getId().getPath().endsWith("generator")) continue;
                 if (it.getId().getPath().endsWith("gessence")) continue;
@@ -82,7 +81,7 @@ public class TechResourcesGenerator {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfigs.SPEC,"techresourcesgenerator-common.toml");
 
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        ModBlock.BLOCKS.register(bus);
+        ModBlocks.BLOCKS.register(bus);
         ModItem.ITEMS.register(bus);
         ModBlockEntities.TILE_ENTITIES.register(bus);
         ModMenuTypes.MENUS.register(bus);
@@ -91,7 +90,9 @@ public class TechResourcesGenerator {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 
         MinecraftForge.EVENT_BUS.register(this);
-        Arrays.stream(GessenceType.values()).toList().forEach(ModItem::createGessence);
+        for (GessenceType value : GessenceType.values()) {
+            ModItem.createGessence(value);
+        }
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -102,17 +103,15 @@ public class TechResourcesGenerator {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            MenuScreens.register(ModMenuTypes.MAGMATIC_GENERATOR_MENU.get(), MagmaticGeneratorScreen::new);
-            MenuScreens.register(ModMenuTypes.ELECTRIC_GENERATOR_MENU.get(), ElectricGeneratorScreen::new);
-        }
-
-        @SubscribeEvent
-        public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
-            event.registerBlockEntityRenderer(ModBlockEntities.ELECTRIC_GENERATOR.get(),
+            ScreenManager.register(ModMenuTypes.MAGMATIC_GENERATOR_MENU.get(), MagmaticGeneratorScreen::new);
+            ScreenManager.register(ModMenuTypes.ELECTRIC_GENERATOR_MENU.get(), ElectricGeneratorScreen::new);
+            ClientRegistry.bindTileEntityRenderer(ModBlockEntities.ELECTRIC_GENERATOR.get(),
                     ElectricGeneratorRenderer::new);
-            event.registerBlockEntityRenderer(ModBlockEntities.CARD_INFUSER.get(),
+            ClientRegistry.bindTileEntityRenderer(ModBlockEntities.CARD_INFUSER.get(),
                     CardInfuserRenderer::new);
         }
+
+
     }
 
 }

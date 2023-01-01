@@ -1,21 +1,22 @@
 package fr.iglee42.techresourcesgenerator.client.renderer.screen.render;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.inventory.container.PlayerContainer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.logging.log4j.LogManager;
@@ -62,7 +63,7 @@ public class FluidTankRenderer {
         this.height = height;
     }
 
-    public void render(PoseStack poseStack, int x, int y, FluidStack fluidStack) {
+    public void render(MatrixStack poseStack, int x, int y, FluidStack fluidStack) {
         RenderSystem.enableBlend();
         poseStack.pushPose();
         {
@@ -70,11 +71,11 @@ public class FluidTankRenderer {
             drawFluid(poseStack, width, height, fluidStack);
         }
         poseStack.popPose();
-        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.color4f(1, 1, 1, 1);
         RenderSystem.disableBlend();
     }
 
-    private void drawFluid(PoseStack poseStack, final int width, final int height, FluidStack fluidStack) {
+    private void drawFluid(MatrixStack poseStack, final int width, final int height, FluidStack fluidStack) {
         Fluid fluid = fluidStack.getFluid();
         if (fluid.isSame(Fluids.EMPTY)) {
             return;
@@ -102,7 +103,7 @@ public class FluidTankRenderer {
         ResourceLocation fluidStill = renderProperties.getStillTexture(fluidStack);
 
         Minecraft minecraft = Minecraft.getInstance();
-        return minecraft.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(fluidStill);
+        return minecraft.getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(fluidStill);
     }
 
     private int getColorTint(FluidStack ingredient) {
@@ -111,8 +112,9 @@ public class FluidTankRenderer {
         return renderProperties.getColor(ingredient);
     }
 
-    private static void drawTiledSprite(PoseStack poseStack, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {
-        RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
+    private static void drawTiledSprite(MatrixStack poseStack, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.getTextureManager().bind(PlayerContainer.BLOCK_ATLAS);
         Matrix4f matrix = poseStack.last().pose();
         setGLColorFromInt(color);
 
@@ -145,7 +147,7 @@ public class FluidTankRenderer {
         float blue = (color & 0xFF) / 255.0F;
         float alpha = ((color >> 24) & 0xFF) / 255F;
 
-        RenderSystem.setShaderColor(red, green, blue, alpha);
+        RenderSystem.color4f(red, green, blue, alpha);
     }
 
     private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, long maskTop, long maskRight, float zLevel) {
@@ -156,11 +158,10 @@ public class FluidTankRenderer {
         uMax = uMax - (maskRight / 16F * (uMax - uMin));
         vMax = vMax - (maskTop / 16F * (vMax - vMin));
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
-        Tesselator tessellator = Tesselator.getInstance();
+        Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferBuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
         bufferBuilder.vertex(matrix, xCoord, yCoord + 16, zLevel).uv(uMin, vMax).endVertex();
         bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).uv(uMax, vMax).endVertex();
         bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).uv(uMax, vMin).endVertex();
@@ -168,8 +169,8 @@ public class FluidTankRenderer {
         tessellator.end();
     }
 
-    public List<Component> getTooltip(FluidStack fluidStack, TooltipFlag tooltipFlag) {
-        List<Component> tooltip = new ArrayList<>();
+    public List<ITextComponent> getTooltip(FluidStack fluidStack, ITooltipFlag tooltipFlag) {
+        List<ITextComponent> tooltip = new ArrayList<>();
 
         Fluid fluidType = fluidStack.getFluid();
         try {
@@ -177,18 +178,18 @@ public class FluidTankRenderer {
                 return tooltip;
             }
 
-            Component displayName = fluidStack.getDisplayName();
+            ITextComponent displayName = fluidStack.getDisplayName();
             tooltip.add(displayName);
 
             long amount = fluidStack.getAmount();
             long milliBuckets = (amount * 1000) / FluidAttributes.BUCKET_VOLUME;
 
             if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
-                MutableComponent amountString = new TranslatableComponent("tooltip.techresourcesgenerator.liquid_amount.with_capacity", nf.format(milliBuckets), nf.format(capacity));
-                tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
+                TranslationTextComponent amountString = new TranslationTextComponent("tooltip.techresourcesgenerator.liquid_amount.with_capacity", nf.format(milliBuckets), nf.format(capacity));
+                tooltip.add(amountString.withStyle(TextFormatting.GRAY));
             } else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
-                MutableComponent amountString = new TranslatableComponent("tooltip.techresourcesgenerator.liquid_amount", nf.format(milliBuckets));
-                tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
+                TranslationTextComponent amountString = new TranslationTextComponent("tooltip.techresourcesgenerator.liquid_amount", nf.format(milliBuckets));
+                tooltip.add(amountString.withStyle(TextFormatting.GRAY));
             }
         } catch (RuntimeException e) {
             LOGGER.error("Failed to get tooltip for fluid: " + e);

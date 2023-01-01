@@ -2,11 +2,11 @@ package fr.iglee42.techresourcesgenerator.items;
 
 import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 public class ModItem {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, TechResourcesGenerator.MODID);

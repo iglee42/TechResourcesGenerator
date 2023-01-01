@@ -1,27 +1,33 @@
 package fr.iglee42.techresourcesgenerator.menu;
 
 import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.network.IContainerFactory;
+import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 public class ModMenuTypes {
-    public static final DeferredRegister<MenuType<?>> MENUS =
+    public static final DeferredRegister<ContainerType<?>> MENUS =
             DeferredRegister.create(ForgeRegistries.CONTAINERS, TechResourcesGenerator.MODID);
 
-    public static final RegistryObject<MenuType<MagmaticGeneratorMenu>> MAGMATIC_GENERATOR_MENU =
-            registerMenuType(MagmaticGeneratorMenu::new, "magmatic_generator_menu");
-    public static final RegistryObject<MenuType<ElectricGeneratorMenu>> ELECTRIC_GENERATOR_MENU =
-            registerMenuType(ElectricGeneratorMenu::new, "electric_generator_menu");
+    public static final RegistryObject<ContainerType<MagmaticGeneratorMenu>> MAGMATIC_GENERATOR_MENU = MENUS.register("magmatic_generator_menu",
+                    () -> IForgeContainerType.create(((windowId, inv, data) -> {
+                        BlockPos pos = data.readBlockPos();
+                        World world = inv.player.level;
+                        return new MagmaticGeneratorMenu(windowId,  inv,world.getBlockEntity(pos), GeneratorType.IRON);
+                    })));
+    public static final RegistryObject<ContainerType<ElectricGeneratorMenu>> ELECTRIC_GENERATOR_MENU = MENUS.register("electric_generator_menu",
+            () -> IForgeContainerType.create(((windowId, inv, data) -> {
+                BlockPos pos = data.readBlockPos();
+                World world = inv.player.level;
+                return new ElectricGeneratorMenu(windowId,  inv,world.getBlockEntity(pos), GeneratorType.IRON);
+            })));
 
 
-    private static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> registerMenuType(IContainerFactory<T> factory,
-                                                                                                  String name) {
-        return MENUS.register(name, () -> IForgeMenuType.create(factory));
-    }
+
 
 }

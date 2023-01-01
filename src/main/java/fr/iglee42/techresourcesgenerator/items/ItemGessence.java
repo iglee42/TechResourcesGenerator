@@ -3,17 +3,17 @@ package fr.iglee42.techresourcesgenerator.items;
 import fr.iglee42.techresourcesbase.api.utils.ModsUtils;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemGessence extends Item {
@@ -30,7 +30,7 @@ public class ItemGessence extends Item {
     }
 
     private GessenceType type;
-    public ItemGessence(GessenceType type, CreativeModeTab group) {
+    public ItemGessence(GessenceType type, ItemGroup group) {
         super(new Properties().tab(group));
         this.type = type;
     }
@@ -40,12 +40,12 @@ public class ItemGessence extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level p_41422_, List<Component> components, TooltipFlag p_41424_) {
+    public void appendHoverText(ItemStack stack, @Nullable World p_41422_, List<ITextComponent> components, ITooltipFlag p_41424_) {
         super.appendHoverText(stack, p_41422_, components, p_41424_);
-        components.add(new TextComponent("Miniumum Generator Tier : ").withStyle(ChatFormatting.YELLOW)
-                .append(new TextComponent(ModsUtils.getUpperName(!(isElectronicGessence(stack.getItem())) ? type.getMinimumGenerator().name().toLowerCase() :
+        components.add(new StringTextComponent("Miniumum Generator Tier : ").withStyle(TextFormatting.YELLOW)
+                .append(new StringTextComponent(ModsUtils.getUpperName(!(isElectronicGessence(stack.getItem())) ? type.getMinimumGenerator().name().toLowerCase() :
                         (type.getMinimumGenerator().getOrder() < GeneratorType.MODIUM.getOrder() ? GeneratorType.MODIUM.name().toLowerCase() : type.name().toLowerCase())
-                        , " ")).withStyle(ChatFormatting.GOLD)));
+                        , " ")).withStyle(TextFormatting.GOLD)));
     }
 
 

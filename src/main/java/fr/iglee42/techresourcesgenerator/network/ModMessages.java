@@ -2,12 +2,12 @@ package fr.iglee42.techresourcesgenerator.network;
 
 import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
 import fr.iglee42.techresourcesgenerator.network.packets.*;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 public class ModMessages {
     private static SimpleChannel INSTANCE;
 
@@ -41,6 +41,7 @@ public class ModMessages {
                 .encoder(ItemStackSyncS2CPacket::toBytes)
                 .consumer(ItemStackSyncS2CPacket::handle)
                 .add();
+
         net.messageBuilder(CardInfuserProgressSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(CardInfuserProgressSyncS2CPacket::new)
                 .encoder(CardInfuserProgressSyncS2CPacket::toBytes)
@@ -78,7 +79,7 @@ public class ModMessages {
         INSTANCE.sendToServer(message);
     }
 
-    public static <MSG> void sendToPlayer(MSG message, ServerPlayer player) {
+    public static <MSG> void sendToPlayer(MSG message, ServerPlayerEntity player) {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
     }
 

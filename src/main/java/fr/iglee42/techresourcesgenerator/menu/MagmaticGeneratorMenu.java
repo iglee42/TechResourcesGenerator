@@ -1,39 +1,35 @@
 package fr.iglee42.techresourcesgenerator.menu;
 
-import fr.iglee42.techresourcesgenerator.blocks.ModBlock;
+import fr.iglee42.techresourcesgenerator.blocks.ModBlocks;
 import fr.iglee42.techresourcesgenerator.menu.slots.BucketSlot;
 import fr.iglee42.techresourcesgenerator.menu.slots.GessenceSlot;
 import fr.iglee42.techresourcesgenerator.menu.slots.OutputSlot;
 import fr.iglee42.techresourcesgenerator.tiles.generator.MagmaticGeneratorTile;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-public class MagmaticGeneratorMenu extends AbstractContainerMenu {
+public class MagmaticGeneratorMenu extends Container {
     public MagmaticGeneratorTile blockEntity;
-    private final Level level;
+    private final World level;
     private FluidStack fluidStack;
     private float delay;
-    private Component errorMessage = new TextComponent("");
+    private ITextComponent errorMessage = new StringTextComponent("");
 
     private GeneratorType generator;
 
-    public MagmaticGeneratorMenu(int id, Inventory inv, FriendlyByteBuf extraData) {
-        this(id, inv, inv.player.level.getBlockEntity(extraData.readBlockPos()),GeneratorType.IRON);
-    }
 
-    public MagmaticGeneratorMenu(int id, Inventory inv, BlockEntity entity,GeneratorType generator) {
+    public MagmaticGeneratorMenu(int id, PlayerInventory inv, TileEntity entity, GeneratorType generator) {
         super(ModMenuTypes.MAGMATIC_GENERATOR_MENU.get(), id);
         blockEntity = (MagmaticGeneratorTile) entity;
         this.level = inv.player.level;
@@ -81,7 +77,7 @@ public class MagmaticGeneratorMenu extends AbstractContainerMenu {
     private static final int TE_INVENTORY_SLOT_COUNT = 4;  // must be the number of slots you have!
 
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int index) {
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
         Slot sourceSlot = slots.get(index);
         if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;  //EMPTY_ITEM
         ItemStack sourceStack = sourceSlot.getItem();
@@ -114,14 +110,14 @@ public class MagmaticGeneratorMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.IRON_GENERATOR.get()) ||
-         stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.GOLD_GENERATOR.get()) ||
-         stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.DIAMOND_GENERATOR.get()) ||
-         stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.NETHERITE_GENERATOR.get());
+    public boolean stillValid(PlayerEntity player) {
+        return stillValid(IWorldPosCallable.create(level, blockEntity.getBlockPos()), player, ModBlocks.IRON_GENERATOR.get()) ||
+         stillValid(IWorldPosCallable.create(level, blockEntity.getBlockPos()), player, ModBlocks.GOLD_GENERATOR.get()) ||
+         stillValid(IWorldPosCallable.create(level, blockEntity.getBlockPos()), player, ModBlocks.DIAMOND_GENERATOR.get()) ||
+         stillValid(IWorldPosCallable.create(level, blockEntity.getBlockPos()), player, ModBlocks.NETHERITE_GENERATOR.get());
     }
 
-    private void addPlayerInventory(Inventory playerInventory) {
+    private void addPlayerInventory(PlayerInventory playerInventory) {
         for (int i = 0; i < 3; ++i) {
             for (int l = 0; l < 9; ++l) {
                 this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 86 + i * 18));
@@ -129,13 +125,13 @@ public class MagmaticGeneratorMenu extends AbstractContainerMenu {
         }
     }
 
-    private void addPlayerHotbar(Inventory playerInventory) {
+    private void addPlayerHotbar(PlayerInventory playerInventory) {
         for (int i = 0; i < 9; ++i) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 144));
         }
     }
 
-    public Level getLevel() {
+    public World getLevel() {
         return level;
     }
 
@@ -147,11 +143,11 @@ public class MagmaticGeneratorMenu extends AbstractContainerMenu {
         return delay;
     }
 
-    public void setErrorMessage(Component message) {
+    public void setErrorMessage(ITextComponent message) {
         this.errorMessage = message;
     }
 
-    public Component getErrorMessage() {
+    public ITextComponent getErrorMessage() {
         return errorMessage;
     }
 }

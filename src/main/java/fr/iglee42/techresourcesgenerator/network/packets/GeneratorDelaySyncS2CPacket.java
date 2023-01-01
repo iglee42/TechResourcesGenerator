@@ -3,9 +3,9 @@ package fr.iglee42.techresourcesgenerator.network.packets;
 import fr.iglee42.techresourcesgenerator.menu.ElectricGeneratorMenu;
 import fr.iglee42.techresourcesgenerator.menu.MagmaticGeneratorMenu;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -18,12 +18,12 @@ public class GeneratorDelaySyncS2CPacket {
         this.pos = pos;
     }
 
-    public GeneratorDelaySyncS2CPacket(FriendlyByteBuf buf) {
+    public GeneratorDelaySyncS2CPacket(PacketBuffer buf) {
         this.delay = buf.readFloat();
         this.pos = buf.readBlockPos();
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeFloat(delay);
         buf.writeBlockPos(pos);
     }
@@ -31,11 +31,10 @@ public class GeneratorDelaySyncS2CPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-                if(Minecraft.getInstance().player.containerMenu instanceof MagmaticGeneratorMenu menu &&
-                        menu.getBlockEntity().getBlockPos().equals(pos)) {
-                    menu.setDelay(this.delay);
-                } else if (Minecraft.getInstance().player.containerMenu instanceof ElectricGeneratorMenu menu && menu.getBlockEntity().getBlockPos().equals(pos)){
-                    menu.setDelay(this.delay);
+                if(Minecraft.getInstance().player.containerMenu instanceof MagmaticGeneratorMenu) {
+                    ((MagmaticGeneratorMenu)Minecraft.getInstance().player.containerMenu).setDelay(this.delay);
+                } else if (Minecraft.getInstance().player.containerMenu instanceof ElectricGeneratorMenu ){
+                    ((MagmaticGeneratorMenu)Minecraft.getInstance().player.containerMenu).setDelay(this.delay);
                 }
         });
         return true;

@@ -3,16 +3,11 @@ package fr.iglee42.techresourcesgenerator.network.packets;
 import fr.iglee42.techresourcesgenerator.tiles.CardInfuserTile;
 import fr.iglee42.techresourcesgenerator.tiles.generator.ElectricGeneratorTile;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.network.NetworkEvent;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.function.Supplier;
 
 public class ItemStackSyncS2CPacket {
@@ -24,34 +19,35 @@ public class ItemStackSyncS2CPacket {
         this.pos = pos;
     }
 
-    public ItemStackSyncS2CPacket(FriendlyByteBuf buf) {
-        List<ItemStack> collection = buf.readCollection(ArrayList::new, FriendlyByteBuf::readItem);
-        itemStackHandler = new ItemStackHandler(collection.size());
-        for (int i = 0; i < collection.size(); i++) {
-            itemStackHandler.insertItem(i, collection.get(i), false);
+    public ItemStackSyncS2CPacket(PacketBuffer buf) {
+        int size = buf.readInt();
+        itemStackHandler = new ItemStackHandler(size);
+        for (int i = 0; i < size; i++) {
+            itemStackHandler.insertItem(i, buf.readItem(), false);
         }
 
         this.pos = buf.readBlockPos();
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
-        Collection<ItemStack> list = new ArrayList<>();
+    public void toBytes(PacketBuffer buf) {
+        buf.writeInt(itemStackHandler.getSlots());
         for(int i = 0; i < itemStackHandler.getSlots(); i++) {
-            list.add(itemStackHandler.getStackInSlot(i));
+            buf.writeItem(itemStackHandler.getStackInSlot(i));
         }
 
-        buf.writeCollection(list, FriendlyByteBuf::writeItem);
         buf.writeBlockPos(pos);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-            if(Minecraft.getInstance().level.getBlockEntity(pos) instanceof ElectricGeneratorTile blockEntity) {
-                blockEntity.setHandler(this.itemStackHandler);
+            if(Minecraft.getInstance().level.getBlockEntity(pos) instanceof ElectricGeneratorTile) {
+                ElectricGeneratorTile tile = (ElectricGeneratorTile) Minecraft.getInstance().level.getBlockEntity(pos);
+                tile.setHandler(this.itemStackHandler);
             }
-            if(Minecraft.getInstance().level.getBlockEntity(pos) instanceof CardInfuserTile blockEntity) {
-                blockEntity.setHandler(this.itemStackHandler);
+            if(Minecraft.getInstance().level.getBlockEntity(pos) instanceof CardInfuserTile) {
+                CardInfuserTile tile = (CardInfuserTile) Minecraft.getInstance().level.getBlockEntity(pos);
+                tile.setHandler(this.itemStackHandler);
             }
         });
         return true;

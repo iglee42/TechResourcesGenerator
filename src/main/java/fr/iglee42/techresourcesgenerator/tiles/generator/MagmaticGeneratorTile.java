@@ -8,25 +8,24 @@ import fr.iglee42.techresourcesgenerator.network.packets.GeneratorGenerateReturn
 import fr.iglee42.techresourcesgenerator.tiles.ModBlockEntities;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.Containers;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -36,10 +35,12 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.antlr.v4.runtime.misc.NotNull;
 
-public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class MagmaticGeneratorTile extends GeneratorTile implements INamedContainerProvider {
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(4) {
         @Override
@@ -62,11 +63,11 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
 
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
-    public MagmaticGeneratorTile(BlockState state, BlockPos pos,GeneratorType generatorType) {
-        super(ModBlockEntities.MAGMATIC_GENERATOR.get(), state, pos,generatorType);
+    public MagmaticGeneratorTile(GeneratorType generatorType) {
+        super(ModBlockEntities.MAGMATIC_GENERATOR.get(),generatorType);
     }
-    public MagmaticGeneratorTile(BlockPos pos, BlockState state) {
-        this( state, pos,GeneratorType.IRON);
+    public MagmaticGeneratorTile(){
+        this(GeneratorType.IRON);
     }
 
     @Override
@@ -75,10 +76,10 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
     }
 
     @Override
-    protected void second(Level level, BlockPos pos, BlockState state, GeneratorTile tile) {
+    protected void second(World level, BlockPos pos, BlockState state, GeneratorTile tile) {
         this.setGessence(GessenceType.getByItemCanBeNull(itemHandler.getStackInSlot(2).getItem()));
         if (LAVA_TANK.getFluidInTank(0).getAmount() <= 7000){
-            if (level.getFluidState(pos.offset(0,1,0)).is(Fluids.LAVA)){
+            if (level.getFluidState(pos.offset(0,1,0)) == Fluids.LAVA.defaultFluidState()){
                 level.setBlockAndUpdate(pos.offset(0,1,0), Blocks.AIR.defaultBlockState());
                 setFluid(new FluidStack(Fluids.LAVA,LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
                 setChanged();
@@ -91,7 +92,7 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
         }
         ItemStack slot1 = itemHandler.getStackInSlot(0);
         ItemStack slot2 = itemHandler.getStackInSlot(1);
-        if (slot1.is(Items.BUCKET)){
+        if (slot1.getItem() == Items.BUCKET){
             if (slot2.isEmpty()){
                 if (getFluidStack().getAmount() >= 1000){
                     setFluid(new FluidStack(Fluids.LAVA,LAVA_TANK.getFluidInTank(0).getAmount() - 1000));
@@ -100,8 +101,8 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
                     itemHandler.setStackInSlot(1,new ItemStack(Items.LAVA_BUCKET));
                 }
             }
-        } else if (slot1.is(Items.LAVA_BUCKET)){
-            if (slot2.isEmpty() || slot2.is(Items.BUCKET)){
+        } else if (slot1.getItem() == Items.LAVA_BUCKET){
+            if (slot2.isEmpty() || slot2.getItem() == Items.BUCKET){
                 if (getFluidStack().getAmount() <= 7000) {
                     if (slot2.isEmpty()) {
                         setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
@@ -153,8 +154,12 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
         return this.LAVA_TANK.getFluid();
     }
     private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
+
+ 
+
+    @Nonnull
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
+    public  <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side) {
         return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? lazyItemHandler.cast() : (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? lazyFluidHandler.cast() : super.getCapability(cap,side));
     }
 
@@ -173,73 +178,74 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(BlockState state ,CompoundNBT tag) {
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         LAVA_TANK.readFromNBT(tag.getCompound("lavatank"));
         this.setGeneratorType(GeneratorType.valueOf(tag.getString("generatorType")));
+        super.load(state,tag);
     }
 
     @Override
     public boolean generateItem() {
         if (ItemGessence.isElectronicGessence(this.itemHandler.getStackInSlot(2).getItem())){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.dontaccept").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslationTextComponent("tooltip.techresourcesgenerator.dontaccept").withStyle(TextFormatting.RED),worldPosition));
             return false;
         }
         if (!this.hasGessence()){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.no_gessence").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslationTextComponent("tooltip.techresourcesgenerator.no_gessence").withStyle(TextFormatting.RED),worldPosition));
             return false;
         } else if (getGessence().getMinimumGenerator().getOrder() > getGeneratorType().getOrder()){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.gessence_not_compatible").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslationTextComponent("tooltip.techresourcesgenerator.gessence_not_compatible").withStyle(TextFormatting.RED),worldPosition));
             return false;
         }
         if (itemHandler.getStackInSlot(3).isEmpty()) {
             itemHandler.setStackInSlot(3, new ItemStack(this.getGessence().getItem(), this.getItemsDropped()));
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TextComponent(""),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new StringTextComponent(""),worldPosition));
             return true;
-        } else if (itemHandler.getStackInSlot(3).is(this.getGessence().getItem())) {
+        } else if (itemHandler.getStackInSlot(3).getItem() == this.getGessence().getItem()) {
             if (itemHandler.getStackInSlot(3).getMaxStackSize() >= (itemHandler.getStackInSlot(3).getCount() + getItemsDropped())) {
                 itemHandler.setStackInSlot(3, new ItemStack(this.getGessence().getItem(), itemHandler.getStackInSlot(3).getCount() + this.getItemsDropped()));
-                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TextComponent(""),worldPosition));
+                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new StringTextComponent(""),worldPosition));
                 return true;
             } else {
-                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
+                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslationTextComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(TextFormatting.RED),worldPosition));
                 return false;
             }
         } else
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslationTextComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(TextFormatting.RED),worldPosition));
         return false;
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public CompoundNBT save(CompoundNBT tag) {
         tag.put("inventory", itemHandler.serializeNBT());
-        CompoundTag tank = new CompoundTag();
+        CompoundNBT tank = new CompoundNBT();
         LAVA_TANK.writeToNBT(tank);
         tag.put("lavatank",tank);
         tag.putString("generatorType",getGeneratorType().name());
+        return super.save(tag);
     }
     public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
         for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
+            ItemEntity item = new ItemEntity(this.level,worldPosition.getX() + 0.5,worldPosition.getY()+ 1,worldPosition.getZ() + 0.5,itemHandler.getStackInSlot(i));
+            item.setDefaultPickUpDelay();
+            level.addFreshEntity(item);
         }
 
-        Containers.dropContents(this.level, this.worldPosition, inventory);
+
     }
 
 
-
-    @Override
-    public Component getDisplayName() {
-        return new TextComponent("Magmatic Generator");
-    }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
+    public Container createMenu(int id, PlayerInventory inv, PlayerEntity player) {
         ModMessages.sendToClients(new FluidSyncS2CPacket(this.getFluidStack(), worldPosition));
         return new MagmaticGeneratorMenu(id,inv,this,getGeneratorType());
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return new StringTextComponent("Magmatic Generator");
     }
 }

@@ -3,16 +3,16 @@ package fr.iglee42.techresourcesgenerator.tiles.generator;
 import fr.iglee42.techresourcesgenerator.utils.ConfigsForType;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
-public abstract class GeneratorTile extends BlockEntity {
+public abstract class GeneratorTile extends TileEntity implements ITickableTileEntity {
 
     private GeneratorType generatorType;
     private GessenceType type;
@@ -20,19 +20,23 @@ public abstract class GeneratorTile extends BlockEntity {
     private int tick = 0;
 
     private float delay;
-    public GeneratorTile(BlockEntityType<?> p_i48289_1_, BlockState state, BlockPos pos, GeneratorType generatorType) {
-        super(p_i48289_1_,pos,state);
+    public GeneratorTile(TileEntityType<?> p_i48289_1_,GeneratorType generatorType) {
+        super(p_i48289_1_);
         this.generatorType = generatorType;
         this.delay = getDelayBetweenItem();
     }
 
 
-    public static float getDelay(ServerLevel level, BlockPos blockPos) {
+    public static float getDelay(ServerWorld level, BlockPos blockPos) {
         return level.getBlockEntity(blockPos) instanceof GeneratorTile ? ((GeneratorTile)level.getBlockEntity(blockPos)).getDelay() : 0;
     }
 
+    @Override
+    public void tick() {
+        tick(this.level,worldPosition,this.getBlockState(),this);
+    }
 
-    public void tick(Level level, BlockPos pos, BlockState state,GeneratorTile tile) {
+    public void tick(World level, BlockPos pos, BlockState state, GeneratorTile tile) {
 
         tick++;
         if (tick == 20){ this.second(level, pos, state, tile); tick = 0;}
@@ -44,7 +48,7 @@ public abstract class GeneratorTile extends BlockEntity {
 
 
 
-    protected void second(Level level, BlockPos pos, BlockState state, GeneratorTile tile) {
+    protected void second(World level, BlockPos pos, BlockState state, GeneratorTile tile) {
         enabled = hasGessence();
         if (enabled)delay = delay - 1;
        /*if (delay == 0) {
@@ -66,16 +70,16 @@ public abstract class GeneratorTile extends BlockEntity {
 
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public CompoundNBT save(CompoundNBT tag) {
         tag.putInt("tick",tick);
         if (type != null)tag.putString("gessence",type.getRessourceName());
         tag.putFloat("delay",delay);
+        return super.save(tag);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(BlockState state,CompoundNBT tag) {
+        super.load(state,tag);
         tick = tag.getInt("tick");
         delay = tag.getFloat("delay");
         if (tag.contains("gessence")) type = GessenceType.getByResourceName(tag.getString("gessence"));

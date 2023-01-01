@@ -1,11 +1,11 @@
 package fr.iglee42.techresourcesgenerator.network.packets;
 
 import fr.iglee42.techresourcesgenerator.tiles.generator.GeneratorTile;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.function.Supplier;
 
@@ -18,18 +18,19 @@ public class GeneratorGenerateActionC2SPacket {
         this.pos = pos;
     }
 
-    public GeneratorGenerateActionC2SPacket(FriendlyByteBuf buf) {
+    public GeneratorGenerateActionC2SPacket(PacketBuffer buf) {
         this.pos = buf.readBlockPos();
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeBlockPos(pos);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-                if(ServerLifecycleHooks.getCurrentServer().getLevel(Level.OVERWORLD).getBlockEntity(pos) instanceof GeneratorTile te) {
+                if(ServerLifecycleHooks.getCurrentServer().getLevel(World.OVERWORLD).getBlockEntity(pos) instanceof GeneratorTile) {
+                    GeneratorTile te = (GeneratorTile) ServerLifecycleHooks.getCurrentServer().getLevel(World.OVERWORLD).getBlockEntity(pos);
                     if (te.generateItem()) te.resetDelay();
                 }
         });

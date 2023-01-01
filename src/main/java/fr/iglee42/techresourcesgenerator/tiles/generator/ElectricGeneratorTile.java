@@ -8,22 +8,21 @@ import fr.iglee42.techresourcesgenerator.utils.ConfigsForType;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
 import fr.iglee42.techresourcesgenerator.utils.ModEnergyStorage;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.Containers;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -31,10 +30,11 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class ElectricGeneratorTile extends GeneratorTile implements INamedContainerProvider {
 
     private final ItemStackHandler itemHandler = new ItemStackHandler(2) {
         @Override
@@ -43,7 +43,7 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
         }
 
         @Override
-        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+        public @Nonnull ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
             if (slot == 1 && simulate) return stack;
             return super.insertItem(slot, stack, simulate);
         }
@@ -54,11 +54,11 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
 
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
-    public ElectricGeneratorTile(BlockState state, BlockPos pos, GeneratorType generatorType) {
-        super(ModBlockEntities.ELECTRIC_GENERATOR.get(), state, pos,generatorType);
+    public ElectricGeneratorTile( GeneratorType generatorType) {
+        super(ModBlockEntities.ELECTRIC_GENERATOR.get(),generatorType);
     }
-    public ElectricGeneratorTile(BlockPos pos, BlockState state) {
-        this( state, pos,GeneratorType.IRON);
+    public ElectricGeneratorTile(){
+        this(GeneratorType.MODIUM);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
     }
 
     @Override
-    protected void second(Level level, BlockPos pos, BlockState state, GeneratorTile tile) {
+    protected void second(World level, BlockPos pos, BlockState state, GeneratorTile tile) {
         this.setGessence(GessenceType.getByItemCanBeNull(itemHandler.getStackInSlot(0).getItem()));
         if (!this.enabled){
             this.enabled = hasEnoughtEnergyForAllProcess() && getDelay() > 0;
@@ -125,7 +125,7 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
     private LazyOptional<IEnergyStorage> lazyEnergyHandler = LazyOptional.empty();
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
+    public @Nonnull <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side) {
         return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? lazyItemHandler.cast() : (cap == CapabilityEnergy.ENERGY ? lazyEnergyHandler.cast() : super.getCapability(cap,side));
     }
 
@@ -144,56 +144,56 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void load(BlockState state,CompoundNBT tag) {
+        
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         ENERGY_STORAGE.setEnergy(tag.getInt("energy"));
         this.setGeneratorType(GeneratorType.valueOf(tag.getString("generatorType")));
         progress = tag.getInt("progress");
+        super.load(state,tag);
     }
 
     @Override
     public boolean generateItem() {
         if (!this.hasGessence()){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.no_gessence").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslationTextComponent("tooltip.techresourcesgenerator.no_gessence").withStyle(TextFormatting.RED),worldPosition));
             return false;
         } else if (getGessence().getMinimumGenerator().getOrder() > getGeneratorType().getOrder()){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.gessence_not_compatible").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslationTextComponent("tooltip.techresourcesgenerator.gessence_not_compatible").withStyle(TextFormatting.RED),worldPosition));
             return false;
         }
         if (itemHandler.getStackInSlot(1).isEmpty()) {
             itemHandler.setStackInSlot(1, new ItemStack(this.getGessence().getItem(), this.getItemsDropped()));
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TextComponent(""),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new StringTextComponent(""),worldPosition));
             return true;
-        } else if (itemHandler.getStackInSlot(1).is(this.getGessence().getItem())) {
+        } else if (itemHandler.getStackInSlot(1).getItem() == this.getGessence().getItem()) {
             if (itemHandler.getStackInSlot(1).getMaxStackSize() >= (itemHandler.getStackInSlot(1).getCount() + getItemsDropped())) {
                 itemHandler.setStackInSlot(1, new ItemStack(this.getGessence().getItem(), itemHandler.getStackInSlot(1).getCount() + this.getItemsDropped()));
-                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TextComponent(""),worldPosition));
+                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new StringTextComponent(""),worldPosition));
                 return true;
             } else {
-                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
+                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslationTextComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(TextFormatting.RED),worldPosition));
                 return false;
             }
         } else
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslationTextComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(TextFormatting.RED),worldPosition));
         return false;
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public CompoundNBT save(CompoundNBT tag) {
         tag.put("inventory", itemHandler.serializeNBT());
         tag.putInt("energy",ENERGY_STORAGE.getEnergyStored());
         tag.putString("generatorType",getGeneratorType().name());
         tag.putInt("progress",progress);
+        return super.save(tag);
     }
     public void drops() {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
         for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
+            ItemEntity item = new ItemEntity(this.level,worldPosition.getX() + 0.5,worldPosition.getY()+ 1,worldPosition.getZ() + 0.5,itemHandler.getStackInSlot(i));
+            item.setDefaultPickUpDelay();
+            level.addFreshEntity(item);
         }
-
-        Containers.dropContents(this.level, this.worldPosition, inventory);
     }
 
     public int getProgress() {
@@ -201,13 +201,13 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
     }
 
     @Override
-    public Component getDisplayName() {
-        return new TextComponent("Electric Generator");
+    public ITextComponent getDisplayName() {
+        return new StringTextComponent("Electric Generator");
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
+    public Container createMenu(int id, PlayerInventory inv, PlayerEntity player) {
         ModMessages.sendToClients(new EnergySyncS2CPacket(getEnergyStorage().getEnergyStored(), worldPosition));
         ModMessages.sendToClients(new GeneratorTypeSyncS2C(getGeneratorType(), worldPosition));
         return new ElectricGeneratorMenu(id,inv,this,getGeneratorType());

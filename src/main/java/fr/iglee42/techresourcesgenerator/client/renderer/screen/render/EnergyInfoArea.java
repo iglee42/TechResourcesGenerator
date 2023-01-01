@@ -1,11 +1,12 @@
 package fr.iglee42.techresourcesgenerator.client.renderer.screen.render;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.energy.IEnergyStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -27,16 +28,18 @@ public class EnergyInfoArea extends InfoArea {
     }
 
     public EnergyInfoArea(int xMin, int yMin, IEnergyStorage energy, int width, int height)  {
-        super(new Rect2i(xMin, yMin, width, height));
+        super(new Rectangle2d(xMin, yMin, width, height));
         this.energy = energy;
     }
 
-    public List<Component> getTooltips() {
-        return List.of(new TextComponent(energy.getEnergyStored()+"/"+energy.getMaxEnergyStored()+" FE"));
+    public List<ITextComponent> getTooltips() {
+        List<ITextComponent> tooltip = new ArrayList<>();
+        tooltip.add(new StringTextComponent(energy.getEnergyStored()+"/"+energy.getMaxEnergyStored()+" FE"));
+        return tooltip;
     }
 
     @Override
-    public void draw(PoseStack transform) {
+    public void draw(MatrixStack transform) {
         final int height = area.getHeight();
         int stored = (int)(height*(energy.getEnergyStored()/(float)energy.getMaxEnergyStored()));
         fillGradient(

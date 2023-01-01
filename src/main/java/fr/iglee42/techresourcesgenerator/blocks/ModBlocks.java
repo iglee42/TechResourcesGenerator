@@ -4,19 +4,18 @@ import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
 import fr.iglee42.techresourcesgenerator.blocks.generator.automatic.ElectricGenerator;
 import fr.iglee42.techresourcesgenerator.blocks.generator.manual.MagmaticGenerator;
 import fr.iglee42.techresourcesgenerator.blocks.generator.manual.ManualGenerator;
-import fr.iglee42.techresourcesgenerator.config.CommonConfigs;
 import fr.iglee42.techresourcesgenerator.items.ModItem;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
-public class ModBlock {
+public class ModBlocks {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, TechResourcesGenerator.MODID);
     public static final RegistryObject<Block> BASIC_GENERATOR = createManualGenerator("basic");
