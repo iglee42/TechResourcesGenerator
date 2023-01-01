@@ -13,6 +13,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -23,9 +25,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
@@ -70,10 +73,11 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
             this.enabled = hasEnoughtEnergyForAllProcess() && getDelay() > 0;
         }
         if (getDelay() == 0){
+            this.enabled = false;
             if (generateItem()){
                 progress = 0;
                 resetDelay();
-                this.enabled = false;
+
             }
         }
         if (isEnabled() && getEnergyStorage().extractEnergy(ConfigsForType.getConfigForType(getGeneratorType()).getConsumeFE(),true) > 0){
@@ -81,7 +85,8 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
             progress++;
             getEnergyStorage().extractEnergy(ConfigsForType.getConfigForType(getGeneratorType()).getConsumeFE(),false);
             setChanged();
-
+            ModMessages.sendToClients(new GeneratorDelaySyncS2CPacket(getProgress(),pos));
+            ModMessages.sendToClients(new GeneratorTypeSyncS2C(getGeneratorType(),pos));
         }
 
     }
@@ -121,7 +126,7 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
-        return cap == ForgeCapabilities.ITEM_HANDLER ? lazyItemHandler.cast() : (cap == ForgeCapabilities.ENERGY ? lazyEnergyHandler.cast() : super.getCapability(cap,side));
+        return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? lazyItemHandler.cast() : (cap == CapabilityEnergy.ENERGY ? lazyEnergyHandler.cast() : super.getCapability(cap,side));
     }
 
     @Override
@@ -150,27 +155,27 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
     @Override
     public boolean generateItem() {
         if (!this.hasGessence()){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.translatable("tooltip.techresourcesgenerator.no_gessence").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.no_gessence").withStyle(ChatFormatting.RED),worldPosition));
             return false;
         } else if (getGessence().getMinimumGenerator().getOrder() > getGeneratorType().getOrder()){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.translatable("tooltip.techresourcesgenerator.gessence_not_compatible").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.gessence_not_compatible").withStyle(ChatFormatting.RED),worldPosition));
             return false;
         }
         if (itemHandler.getStackInSlot(1).isEmpty()) {
             itemHandler.setStackInSlot(1, new ItemStack(this.getGessence().getItem(), this.getItemsDropped()));
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.empty(),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TextComponent(""),worldPosition));
             return true;
         } else if (itemHandler.getStackInSlot(1).is(this.getGessence().getItem())) {
             if (itemHandler.getStackInSlot(1).getMaxStackSize() >= (itemHandler.getStackInSlot(1).getCount() + getItemsDropped())) {
                 itemHandler.setStackInSlot(1, new ItemStack(this.getGessence().getItem(), itemHandler.getStackInSlot(1).getCount() + this.getItemsDropped()));
-                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.empty(),worldPosition));
+                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TextComponent(""),worldPosition));
                 return true;
             } else {
-                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.translatable("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
+                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
                 return false;
             }
         } else
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(Component.translatable("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
         return false;
     }
 
@@ -197,7 +202,7 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
 
     @Override
     public Component getDisplayName() {
-        return Component.literal("Electric Generator");
+        return new TextComponent("Electric Generator");
     }
 
     @Nullable

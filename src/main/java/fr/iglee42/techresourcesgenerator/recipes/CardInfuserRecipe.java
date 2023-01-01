@@ -1,14 +1,19 @@
 package fr.iglee42.techresourcesgenerator.recipes;
 
 import com.google.gson.JsonObject;
-import fr.iglee42.techresourcesbase.utils.JsonHelper;
+import fr.iglee42.techresourcesbase.api.utils.JsonHelper;
+import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+
+import javax.annotation.Nullable;
 
 public class CardInfuserRecipe implements Recipe<SimpleContainer> {
 
@@ -77,6 +82,9 @@ public class CardInfuserRecipe implements Recipe<SimpleContainer> {
         public static final String ID = "card_infuser";
     }
     public static class Serializer implements RecipeSerializer<CardInfuserRecipe> {
+        public static final Serializer INSTANCE = new Serializer();
+        public static final ResourceLocation ID =
+                new ResourceLocation(TechResourcesGenerator.MODID,"card_infuser");
         public CardInfuserRecipe fromJson(ResourceLocation rs, JsonObject json) {
             Ingredient base = Ingredient.of(JsonHelper.getItem(json,"base"));
             Ingredient infuser = Ingredient.of(JsonHelper.getItem(json,"infuser"));
@@ -95,6 +103,26 @@ public class CardInfuserRecipe implements Recipe<SimpleContainer> {
             recipe.base.toNetwork(buffer);
             recipe.infuser.toNetwork(buffer);
             recipe.result.toNetwork(buffer);
+        }
+        @Override
+        public RecipeSerializer<?> setRegistryName(ResourceLocation name) {
+            return INSTANCE;
+        }
+
+        @Nullable
+        @Override
+        public ResourceLocation getRegistryName() {
+            return ID;
+        }
+
+        @Override
+        public Class<RecipeSerializer<?>> getRegistryType() {
+            return Serializer.castClass(RecipeSerializer.class);
+        }
+
+        @SuppressWarnings("unchecked") // Need this wrapper, because generics
+        private static <G> Class<G> castClass(Class<?> cls) {
+            return (Class<G>)cls;
         }
     }
 }

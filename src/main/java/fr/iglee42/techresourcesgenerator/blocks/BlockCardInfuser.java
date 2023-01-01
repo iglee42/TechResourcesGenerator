@@ -1,7 +1,5 @@
 package fr.iglee42.techresourcesgenerator.blocks;
 
-import fr.iglee42.techresourcesgenerator.items.ItemGessence;
-import fr.iglee42.techresourcesgenerator.items.ModItem;
 import fr.iglee42.techresourcesgenerator.tiles.CardInfuserTile;
 import fr.iglee42.techresourcesgenerator.tiles.ModBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -28,7 +26,7 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,8 +48,8 @@ public class BlockCardInfuser extends BaseEntityBlock {
         CardInfuserTile tile = (CardInfuserTile) level.getBlockEntity(pos);
         if (tile.isActive()) return InteractionResult.PASS;
         if (hitResult.getDirection() == state.getValue(FACING)) {
-            if (tile.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()) {
-                IItemHandler handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().get();
+            if (tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
+                IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve().get();
                 if (!player.getMainHandItem().isEmpty()){
                     if (handler.getStackInSlot(1).isEmpty()){
                         handler.insertItem(1, new ItemStack(player.getMainHandItem().getItem(),1), false);
@@ -62,8 +60,8 @@ public class BlockCardInfuser extends BaseEntityBlock {
                 }
             }
         } else if (hitResult.getDirection() == Direction.UP) {
-            if (tile.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()) {
-                IItemHandler handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().get();
+            if (tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
+                IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve().get();
                 if (!player.getMainHandItem().isEmpty()) {
                     ItemStack stack = player.getMainHandItem().copy();
                     stack.setCount(1);
@@ -83,8 +81,8 @@ public class BlockCardInfuser extends BaseEntityBlock {
                 }
             }
         } else if (hitResult.getDirection() == Direction.DOWN){
-            if (tile.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()) {
-                IItemHandler handler = tile.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().get();
+            if (tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
+                IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).resolve().get();
                 if (!handler.getStackInSlot(2).isEmpty()){
                     if (player.getMainHandItem().isEmpty())
                         player.setItemInHand(InteractionHand.MAIN_HAND, tile.extractItemForce(2));

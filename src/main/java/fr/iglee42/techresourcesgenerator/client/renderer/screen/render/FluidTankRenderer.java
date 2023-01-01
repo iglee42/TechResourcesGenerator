@@ -10,14 +10,14 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -98,7 +98,7 @@ public class FluidTankRenderer {
 
     private TextureAtlasSprite getStillFluidSprite(FluidStack fluidStack) {
         Fluid fluid = fluidStack.getFluid();
-        IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
+        FluidAttributes renderProperties = fluid.getAttributes();
         ResourceLocation fluidStill = renderProperties.getStillTexture(fluidStack);
 
         Minecraft minecraft = Minecraft.getInstance();
@@ -107,8 +107,8 @@ public class FluidTankRenderer {
 
     private int getColorTint(FluidStack ingredient) {
         Fluid fluid = ingredient.getFluid();
-        IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
-        return renderProperties.getTintColor(ingredient);
+        FluidAttributes renderProperties = fluid.getAttributes();
+        return renderProperties.getColor(ingredient);
     }
 
     private static void drawTiledSprite(PoseStack poseStack, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {
@@ -181,13 +181,13 @@ public class FluidTankRenderer {
             tooltip.add(displayName);
 
             long amount = fluidStack.getAmount();
-            long milliBuckets = (amount * 1000) / FluidType.BUCKET_VOLUME;
+            long milliBuckets = (amount * 1000) / FluidAttributes.BUCKET_VOLUME;
 
             if (tooltipMode == TooltipMode.SHOW_AMOUNT_AND_CAPACITY) {
-                MutableComponent amountString = Component.translatable("tooltip.techresourcesgenerator.liquid_amount.with_capacity", nf.format(milliBuckets), nf.format(capacity));
+                MutableComponent amountString = new TranslatableComponent("tooltip.techresourcesgenerator.liquid_amount.with_capacity", nf.format(milliBuckets), nf.format(capacity));
                 tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
             } else if (tooltipMode == TooltipMode.SHOW_AMOUNT) {
-                MutableComponent amountString = Component.translatable("tooltip.techresourcesgenerator.liquid_amount", nf.format(milliBuckets));
+                MutableComponent amountString = new TranslatableComponent("tooltip.techresourcesgenerator.liquid_amount", nf.format(milliBuckets));
                 tooltip.add(amountString.withStyle(ChatFormatting.GRAY));
             }
         } catch (RuntimeException e) {

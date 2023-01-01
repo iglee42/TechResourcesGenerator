@@ -162,15 +162,16 @@ dependencies {
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compile against the JEI API but do not include it at runtime
-    compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
-    // at runtime, use the full JEI jar
-    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
+    compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}"))
+    // at runtime, use the full JEI jar for Forge
+    runtimeOnly(fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}"))
     // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency
 
     implementation fg.deobf("fr.iglee42.techresourcesbase:TechResourcesBase:${mc_version}-${lib_version}")
 
-    implementation(fg.deobf("curse.maven:mekanism-268560:4041164"))
-    implementation(fg.deobf("curse.maven:pipez-443900:4064952"))
+    implementation(fg.deobf("curse.maven:mekanism-268560:3875976"))
+    implementation(fg.deobf("curse.maven:pipez-443900:3819249"))
     // Examples using mod jars from ./libs
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
 

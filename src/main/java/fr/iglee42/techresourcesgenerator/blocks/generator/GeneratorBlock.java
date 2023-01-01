@@ -14,6 +14,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -31,8 +33,11 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.*;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,7 +85,7 @@ public class GeneratorBlock extends BaseEntityBlock {
                 GessenceType type = GessenceType.getByItem(player.getMainHandItem().getItem());
                 if (type.getMinimumGenerator().getOrder() <= GeneratorType.BASIC.getOrder()) {
                     if (te.hasGessence()) {
-                        player.displayClientMessage(Component.translatable("tooltip.techresourcesgenerator.has_gessence").withStyle(ChatFormatting.RED), true);
+                        player.displayClientMessage(new TranslatableComponent("tooltip.techresourcesgenerator.has_gessence").withStyle(ChatFormatting.RED), true);
                         return InteractionResult.FAIL;
                     } else {
                         te.setGessence(type);
@@ -88,17 +93,17 @@ public class GeneratorBlock extends BaseEntityBlock {
                         return InteractionResult.CONSUME;
                     }
                 } else {
-                    player.displayClientMessage(Component.translatable("tooltip.techresourcesgenerator.gessence_not_compatible").withStyle(ChatFormatting.RED), true);
+                    player.displayClientMessage(new TranslatableComponent("tooltip.techresourcesgenerator.gessence_not_compatible").withStyle(ChatFormatting.RED), true);
                     return InteractionResult.FAIL;
                 }
             }
             if (te.getDelay() > 0){
                 te.setDelay(te.getDelay() - 1);
-                player.displayClientMessage(Component.literal("Delay : " + te.getDelay()).withStyle(ChatFormatting.RED), true);
+                player.displayClientMessage(new TextComponent("Delay : " + te.getDelay()).withStyle(ChatFormatting.RED), true);
             }
             if (te.getDelay() == 0) {
                 if (!te.hasGessence()){
-                    player.displayClientMessage(Component.translatable("tooltip.techresourcesgenerator.no_gessence").withStyle(ChatFormatting.RED),true);
+                    player.displayClientMessage(new TranslatableComponent("tooltip.techresourcesgenerator.no_gessence").withStyle(ChatFormatting.RED),true);
                     return InteractionResult.FAIL;
                 }
                 if (te.generateItem()) te.resetDelay();
@@ -108,10 +113,10 @@ public class GeneratorBlock extends BaseEntityBlock {
         } else if (level.getBlockEntity(pos) instanceof MagmaticGeneratorTile te) {
             if (player.getMainHandItem().is(Items.LAVA_BUCKET) && hit.getDirection() == Direction.UP)
                 return InteractionResult.PASS;
-            else NetworkHooks.openScreen(((ServerPlayer) player), te, pos);
+            else NetworkHooks.openGui(((ServerPlayer) player), te, pos);
         } else if (level.getBlockEntity(pos) instanceof ElectricGeneratorTile te) {
             if (ItemGessence.isElectronicGessence(player.getMainHandItem().getItem())){
-                te.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(itH->{
+                te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(itH->{
                     if (itH.getStackInSlot(0).isEmpty()) {
                         ItemStack stack = player.getMainHandItem().copy();
                         stack.setCount(1);
@@ -120,7 +125,7 @@ public class GeneratorBlock extends BaseEntityBlock {
                     }
                 });
             } else
-                NetworkHooks.openScreen(((ServerPlayer) player), te, pos);
+                NetworkHooks.openGui(((ServerPlayer) player), te, pos);
         }
         return InteractionResult.PASS;
     }
@@ -164,10 +169,10 @@ public class GeneratorBlock extends BaseEntityBlock {
     public void appendHoverText(ItemStack it, @Nullable BlockGetter getter, List<Component> components, TooltipFlag p_49819_) {
         super.appendHoverText(it, getter, components, p_49819_);
         ConfigsForType config = ConfigsForType.getConfigForType(type);
-        components.add(Component.literal("Items dropped : ").withStyle(ChatFormatting.YELLOW).append(""+config.getItemCount()).withStyle(ChatFormatting.GOLD));
-        components.add(Component.literal("Delay : ").withStyle(ChatFormatting.YELLOW).append(""+ config.getDelay()).withStyle(ChatFormatting.GOLD));
+        components.add(new TextComponent("Items dropped : ").withStyle(ChatFormatting.YELLOW).append(""+config.getItemCount()).withStyle(ChatFormatting.GOLD));
+        components.add(new TextComponent("Delay : ").withStyle(ChatFormatting.YELLOW).append(""+ config.getDelay()).withStyle(ChatFormatting.GOLD));
         if (type == GeneratorType.BASIC){
-            components.add(Component.literal("The gessence is consume when the delay is 0").withStyle(ChatFormatting.GOLD));
+            components.add(new TextComponent("The gessence is consume when the delay is 0").withStyle(ChatFormatting.GOLD));
         }
     }
 

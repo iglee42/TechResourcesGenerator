@@ -11,7 +11,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ModMenuTypes {
     public static final DeferredRegister<MenuType<?>> MENUS =
-            DeferredRegister.create(ForgeRegistries.MENU_TYPES, TechResourcesGenerator.MODID);
+            DeferredRegister.create(ForgeRegistries.CONTAINERS, TechResourcesGenerator.MODID);
 
     public static final RegistryObject<MenuType<MagmaticGeneratorMenu>> MAGMATIC_GENERATOR_MENU =
             registerMenuType(MagmaticGeneratorMenu::new, "magmatic_generator_menu");

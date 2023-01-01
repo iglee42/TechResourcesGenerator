@@ -3,13 +3,12 @@ package fr.iglee42.techresourcesgenerator.menu;
 import fr.iglee42.techresourcesgenerator.blocks.ModBlock;
 import fr.iglee42.techresourcesgenerator.menu.slots.GessenceSlot;
 import fr.iglee42.techresourcesgenerator.menu.slots.OutputSlot;
-import fr.iglee42.techresourcesgenerator.network.ModMessages;
-import fr.iglee42.techresourcesgenerator.network.packets.GeneratorDelaySyncC2SPacket;
 import fr.iglee42.techresourcesgenerator.tiles.generator.ElectricGeneratorTile;
 import fr.iglee42.techresourcesgenerator.utils.ConfigsForType;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -18,13 +17,13 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public class ElectricGeneratorMenu extends AbstractContainerMenu {
     public ElectricGeneratorTile blockEntity;
     private final Level level;
     private float delay;
-    private Component errorMessage = Component.empty();
+    private Component errorMessage = new TextComponent("");
 
     private GeneratorType generator;
 
@@ -39,7 +38,7 @@ public class ElectricGeneratorMenu extends AbstractContainerMenu {
         this.generator = generator;
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
-        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+        this.blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
             this.addSlot(new GessenceSlot(handler, 0, 67, 37, blockEntity,true));
             this.addSlot(new OutputSlot(handler, 1, 135, 37));
         });
@@ -51,12 +50,11 @@ public class ElectricGeneratorMenu extends AbstractContainerMenu {
     }
 
     public int getScaledProgress() {
-        ModMessages.sendToServer(new GeneratorDelaySyncC2SPacket(blockEntity.getBlockPos()));
         int progress = (int)getDelay();
-        int maxProgress = ConfigsForType.getConfigForType(generator).getDelay();  // Max Progress 3
-        int progressArrowSize = 255; // This is the height in pixels of your arrow
+        int maxProgress = ConfigsForType.getConfigForType(blockEntity.getGeneratorType()).getDelay();  // Max Progress 3
+        int progressArrowSize = 50; // This is the height in pixels of your arrow
 
-        return maxProgress != 0 && progress != 0 ? progress * (progressArrowSize / maxProgress) : 0;
+        return maxProgress != 0 ? progress * (progressArrowSize / maxProgress) : 0;
     }
 
 

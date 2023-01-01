@@ -14,8 +14,10 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
@@ -36,13 +38,13 @@ public class CardInfuserRecipeCategory implements IRecipeCategory<CardInfuserRec
 
 
     @Override
-    public RecipeType<CardInfuserRecipe> getRecipeType() {
+    public @NotNull RecipeType<CardInfuserRecipe> getRecipeType() {
         return RECIPE_TYPE;
     }
 
     @Override
-    public Component getTitle() {
-        return Component.literal("Card Infuser");
+    public @NotNull Component getTitle() {
+        return new TextComponent("Card Infuser");
     }
 
     @Override
@@ -60,6 +62,16 @@ public class CardInfuserRecipeCategory implements IRecipeCategory<CardInfuserRec
         //this.resultArrow.draw(stack,117,18);
     }
 
+    @Override
+    public ResourceLocation getUid() {
+        return UID;
+    }
+
+    @Override
+    public Class<? extends CardInfuserRecipe> getRecipeClass() {
+        return CardInfuserRecipe.class;
+    }
+
 
     @Override
     public void setRecipe(@Nonnull IRecipeLayoutBuilder builder, @Nonnull CardInfuserRecipe recipe, @Nonnull IFocusGroup focusGroup) {
@@ -71,4 +83,6 @@ public class CardInfuserRecipeCategory implements IRecipeCategory<CardInfuserRec
         
 
     }
+
+
 }
