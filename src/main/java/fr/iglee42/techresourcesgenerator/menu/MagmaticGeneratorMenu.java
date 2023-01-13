@@ -1,11 +1,11 @@
 package fr.iglee42.techresourcesgenerator.menu;
 
 import fr.iglee42.techresourcesgenerator.blocks.ModBlock;
+import fr.iglee42.techresourcesgenerator.customize.Generator;
 import fr.iglee42.techresourcesgenerator.menu.slots.BucketSlot;
 import fr.iglee42.techresourcesgenerator.menu.slots.GessenceSlot;
 import fr.iglee42.techresourcesgenerator.menu.slots.OutputSlot;
 import fr.iglee42.techresourcesgenerator.tiles.generator.MagmaticGeneratorTile;
-import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -16,6 +16,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -27,13 +28,13 @@ public class MagmaticGeneratorMenu extends AbstractContainerMenu {
     private float delay;
     private Component errorMessage = new TextComponent("");
 
-    private GeneratorType generator;
+    private Generator generator;
 
     public MagmaticGeneratorMenu(int id, Inventory inv, FriendlyByteBuf extraData) {
-        this(id, inv, inv.player.level.getBlockEntity(extraData.readBlockPos()),GeneratorType.IRON);
+        this(id, inv, inv.player.level.getBlockEntity(extraData.readBlockPos()),Generator.getByName("iron"));
     }
 
-    public MagmaticGeneratorMenu(int id, Inventory inv, BlockEntity entity,GeneratorType generator) {
+    public MagmaticGeneratorMenu(int id, Inventory inv, BlockEntity entity,Generator generator) {
         super(ModMenuTypes.MAGMATIC_GENERATOR_MENU.get(), id);
         blockEntity = (MagmaticGeneratorTile) entity;
         this.level = inv.player.level;
@@ -115,10 +116,10 @@ public class MagmaticGeneratorMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.IRON_GENERATOR.get()) ||
-         stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.GOLD_GENERATOR.get()) ||
-         stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.DIAMOND_GENERATOR.get()) ||
-         stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlock.NETHERITE_GENERATOR.get());
+        for (Block block : ModBlock.getAllGeneratorForType("magmatic")) {
+            if (stillValid(ContainerLevelAccess.create(level,blockEntity.getBlockPos()),player,block)) return true;
+        }
+        return false;
     }
 
     private void addPlayerInventory(Inventory playerInventory) {

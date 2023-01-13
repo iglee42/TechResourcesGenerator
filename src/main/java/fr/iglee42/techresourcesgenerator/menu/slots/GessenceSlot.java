@@ -1,5 +1,6 @@
 package fr.iglee42.techresourcesgenerator.menu.slots;
 
+import fr.iglee42.techresourcesgenerator.customize.Gessence;
 import fr.iglee42.techresourcesgenerator.items.ItemGessence;
 import fr.iglee42.techresourcesgenerator.tiles.generator.GeneratorTile;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
@@ -25,6 +26,5 @@ public class GessenceSlot extends SlotItemHandler {
 
     @Override
     public boolean mayPlace(@NotNull ItemStack stack) {
-        return ItemGessence.isGessence(stack.getItem()) && GessenceType.isGeneratorValidForGessence(stack,generatorTile.getGeneratorType()) && (acceptOnlyElectronic ? ItemGessence.isElectronicGessence(stack.getItem()) : ItemGessence.isNormalGessence(stack.getItem()));
-    }
+        return ItemGessence.isGessence(stack.getItem()) && Gessence.isGeneratorValidForGessence(stack,generatorTile.getGeneratorType()) && (acceptOnlyElectronic ? ItemGessence.isElectronicGessence(stack.getItem()) : ItemGessence.isNormalGessence(stack.getItem()));    }
 }

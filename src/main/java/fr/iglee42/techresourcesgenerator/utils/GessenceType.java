@@ -42,25 +42,8 @@ public enum GessenceType {
         this(ForgeRegistries.ITEMS.getKey(item),resourceName,isOnlyElectronic,minimumGenerator);
     }
 
-
-
-    public static GessenceType getByResourceName(String name){
-        for (GessenceType type : values()){
-            if (Objects.equals(type.getRessourceName(), name)) return type;
-        }
-        return null;
-    }
-
-    public static GessenceType getByItem(Item item) {
-        return ItemGessence.isGessence(item) ? ((ItemGessence)item).getType() : GessenceType.WOOD;
-    }
-    public static GessenceType getByItemCanBeNull(Item item) {
-        return ItemGessence.isGessence(item) ? ((ItemGessence)item).getType() : null;
-    }
-
-
-    public static boolean isGeneratorValidForGessence(ItemStack stack,GeneratorType type){
-        return getByItem(stack.getItem()).getMinimumGenerator().getOrder() <= type.getOrder();
+    public ResourceLocation getItemLocation(){
+        return item;
     }
 
     public Item getItem() {return ForgeRegistries.ITEMS.getValue(item);}
