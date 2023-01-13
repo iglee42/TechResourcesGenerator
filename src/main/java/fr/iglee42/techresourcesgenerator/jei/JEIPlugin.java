@@ -57,7 +57,8 @@ public class JEIPlugin implements IModPlugin {
                         .collect(Collectors.toList()));
         List<IJeiGessenceOutputRecipe> gessenceOutputRecipes = new ArrayList<>();
         Types.GESSENCES.forEach(g->{
-            gessenceOutputRecipes.add(new GessenceOutputRecipe(Ingredient.of(ModItem.getGessence(g)),Ingredient.of(g.getItem())));
+            if (g.hasNormalGessence())gessenceOutputRecipes.add(new GessenceOutputRecipe(Ingredient.of(ModItem.getGessence(g)),Ingredient.of(g.getItem())));
+            if (g.hasElectronicGessence())gessenceOutputRecipes.add(new GessenceOutputRecipe(Ingredient.of(ModItem.getGessenceCard(g)),Ingredient.of(g.getItem())));
         });
         registration.addRecipes(GessenceOutputRecipeCategory.RECIPE_TYPE,gessenceOutputRecipes);
         registration.addIngredientInfo(new ItemStack(ModBlock.getGenerator(Generator.getByName("basic"))),VanillaTypes.ITEM_STACK,Component.literal("Right click with a gessence to put in the generator. \n\nSneak + Right Click to remove the gessence in the generator \n\nRight click with an empty hand to decrease the delay."));

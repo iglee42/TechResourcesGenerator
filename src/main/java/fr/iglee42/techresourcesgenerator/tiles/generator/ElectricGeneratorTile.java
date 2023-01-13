@@ -70,6 +70,10 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
 
     @Override
     protected void second(Level level, BlockPos pos, BlockState state, GeneratorTile tile) {
+        if (!level.isClientSide()){
+            ModMessages.sendToClients(new GeneratorDelaySyncS2CPacket(getProgress(),pos));
+            ModMessages.sendToClients(new GeneratorTypeSyncS2C(getGeneratorType(),pos));
+        }
         this.setGessence(Gessence.getByItemCanBeNull(itemHandler.getStackInSlot(0).getItem()));
         if (level.getBlockEntity(pos.above()) instanceof SignBlockEntity sign && itemHandler.getStackInSlot(0).is(ModItem.getGessenceCard(Gessence.getByName("blazum")))){
             sign.setMessage(1,Component.literal("Code Lyoko"));
@@ -90,8 +94,7 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
             progress++;
             getEnergyStorage().extractEnergy(consumed,false);
             setChanged();
-            ModMessages.sendToClients(new GeneratorDelaySyncS2CPacket(getProgress(),pos));
-            ModMessages.sendToClients(new GeneratorTypeSyncS2C(getGeneratorType(),pos));
+
         }
 
     }
