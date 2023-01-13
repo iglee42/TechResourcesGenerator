@@ -1,6 +1,8 @@
 package fr.iglee42.techresourcesgenerator.blocks.generator;
 
 import fr.iglee42.techresourcesgenerator.blocks.generator.automatic.ElectricGenerator;
+import fr.iglee42.techresourcesgenerator.customize.Generator;
+import fr.iglee42.techresourcesgenerator.customize.Gessence;
 import fr.iglee42.techresourcesgenerator.items.ItemGessence;
 import fr.iglee42.techresourcesgenerator.items.ModItem;
 import fr.iglee42.techresourcesgenerator.tiles.generator.ElectricGeneratorTile;
@@ -37,10 +39,11 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 public class GeneratorBlock extends BaseEntityBlock {
-    private GeneratorType type;
-    public GeneratorBlock(Properties properties,GeneratorType generatorType) {
+    private Generator type;
+    public GeneratorBlock(Properties properties, Generator generatorType) {
         super(properties);
         this.type = generatorType;
     }
@@ -71,13 +74,13 @@ public class GeneratorBlock extends BaseEntityBlock {
         if (level.getBlockEntity(pos) instanceof ManualGeneratorTile te) {
             if (player.isCrouching()) {
                 if (te.hasGessence()) {
-                    Block.popResource(level, pos.offset(0, 1, 0), new ItemStack(ModItem.getGessence(te.getGessence())));
+                    Block.popResource(level, pos.offset(0, 1, 0), new ItemStack(ModItem.getGessence(te.getGessence()),type.itemCount()));
                     te.setGessence(null);
                     return InteractionResult.SUCCESS;
                 }
             }
             if (ItemGessence.isGessence(player.getMainHandItem().getItem())) {
-                GessenceType type = GessenceType.getByItem(player.getMainHandItem().getItem());
+                Gessence type = Gessence.getByItem(player.getMainHandItem().getItem());
                 if (type.getMinimumGenerator().getOrder() <= GeneratorType.BASIC.getOrder()) {
                     if (te.hasGessence()) {
                         player.displayClientMessage(Component.translatable("tooltip.techresourcesgenerator.has_gessence").withStyle(ChatFormatting.RED), true);
@@ -163,15 +166,14 @@ public class GeneratorBlock extends BaseEntityBlock {
     @Override
     public void appendHoverText(ItemStack it, @Nullable BlockGetter getter, List<Component> components, TooltipFlag p_49819_) {
         super.appendHoverText(it, getter, components, p_49819_);
-        ConfigsForType config = ConfigsForType.getConfigForType(type);
-        components.add(Component.literal("Items dropped : ").withStyle(ChatFormatting.YELLOW).append(""+config.getItemCount()).withStyle(ChatFormatting.GOLD));
-        components.add(Component.literal("Delay : ").withStyle(ChatFormatting.YELLOW).append(""+ config.getDelay()).withStyle(ChatFormatting.GOLD));
-        if (type == GeneratorType.BASIC){
+        components.add(Component.literal("Items dropped : ").withStyle(ChatFormatting.YELLOW).append(""+(type.isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(type.name())).getItemCount() : type.itemCount())).withStyle(ChatFormatting.GOLD));
+        components.add(Component.literal("Delay : ").withStyle(ChatFormatting.YELLOW).append(""+ (type.isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(type.name())).getDelay() : type.delay())).withStyle(ChatFormatting.GOLD));
+        if (Objects.equals(type.generatorType(), "basic")){
             components.add(Component.literal("The gessence is consume when the delay is 0").withStyle(ChatFormatting.GOLD));
         }
     }
 
-    public GeneratorType getType() {
+    public Generator getType() {
         return type;
     }
 }

@@ -1,6 +1,7 @@
 package fr.iglee42.techresourcesgenerator.blocks.generator.manual;
 
 import fr.iglee42.techresourcesgenerator.blocks.generator.GeneratorBlock;
+import fr.iglee42.techresourcesgenerator.customize.Generator;
 import fr.iglee42.techresourcesgenerator.tiles.generator.MagmaticGeneratorTile;
 import fr.iglee42.techresourcesgenerator.tiles.generator.ManualGeneratorTile;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
@@ -26,7 +27,7 @@ import java.util.List;
 public class MagmaticGenerator extends GeneratorBlock {
 
 
-    public MagmaticGenerator(GeneratorType generatorType) {
+    public MagmaticGenerator(Generator generatorType) {
         super(Properties.of(Material.METAL).strength(4.0F, 6.0F).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops(),generatorType);
     }
 
