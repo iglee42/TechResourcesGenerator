@@ -1,8 +1,10 @@
 package fr.iglee42.techresourcesgenerator.blocks.generator.automatic;
 
 import fr.iglee42.techresourcesgenerator.blocks.generator.GeneratorBlock;
+import fr.iglee42.techresourcesgenerator.customize.Generator;
 import fr.iglee42.techresourcesgenerator.tiles.generator.ElectricGeneratorTile;
 import fr.iglee42.techresourcesgenerator.tiles.generator.MagmaticGeneratorTile;
+import fr.iglee42.techresourcesgenerator.utils.ConfigsForType;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -22,7 +24,7 @@ import java.util.List;
 public class ElectricGenerator extends GeneratorBlock {
 
 
-    public ElectricGenerator(GeneratorType generatorType) {
+    public ElectricGenerator(Generator generatorType) {
         super(Properties.of(Material.METAL).strength(4.0F, 6.0F).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops(),generatorType);
     }
 
@@ -33,7 +35,8 @@ public class ElectricGenerator extends GeneratorBlock {
     @Override
     public void appendHoverText(ItemStack it, @Nullable BlockGetter getter, List<Component> list, TooltipFlag flag) {
         super.appendHoverText(it, getter, list, flag);
-        list.add(new TextComponent("Use energy to generate items").withStyle(ChatFormatting.YELLOW));
+        int consumed = getType().isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(getType().name().toLowerCase())).getConsumeFE() : getType().consumed();
+        list.add(new TextComponent("Cosumed Energy : ").withStyle(ChatFormatting.YELLOW).append(new TextComponent(""+consumed).withStyle(ChatFormatting.GOLD)).append("/second").withStyle(ChatFormatting.YELLOW));
     }
 
 }

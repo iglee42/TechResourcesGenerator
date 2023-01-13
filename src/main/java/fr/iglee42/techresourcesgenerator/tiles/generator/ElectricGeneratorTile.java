@@ -1,5 +1,8 @@
 package fr.iglee42.techresourcesgenerator.tiles.generator;
 
+import fr.iglee42.techresourcesgenerator.customize.Generator;
+import fr.iglee42.techresourcesgenerator.customize.Gessence;
+import fr.iglee42.techresourcesgenerator.items.ModItem;
 import fr.iglee42.techresourcesgenerator.menu.ElectricGeneratorMenu;
 import fr.iglee42.techresourcesgenerator.network.ModMessages;
 import fr.iglee42.techresourcesgenerator.network.packets.*;
@@ -23,6 +26,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -54,11 +58,11 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
 
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
-    public ElectricGeneratorTile(BlockState state, BlockPos pos, GeneratorType generatorType) {
+    public ElectricGeneratorTile(BlockState state, BlockPos pos, Generator generatorType) {
         super(ModBlockEntities.ELECTRIC_GENERATOR.get(), state, pos,generatorType);
     }
     public ElectricGeneratorTile(BlockPos pos, BlockState state) {
-        this( state, pos,GeneratorType.IRON);
+        this( state, pos,Generator.getByName("modium"));
     }
 
     @Override
@@ -68,11 +72,19 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
 
     @Override
     protected void second(Level level, BlockPos pos, BlockState state, GeneratorTile tile) {
-        this.setGessence(GessenceType.getByItemCanBeNull(itemHandler.getStackInSlot(0).getItem()));
+        if (!level.isClientSide()) {
+            ModMessages.sendToClients(new GeneratorDelaySyncS2CPacket(getProgress(), pos));
+            ModMessages.sendToClients(new GeneratorTypeSyncS2C(getGeneratorType(), pos));
+        }
+        this.setGessence(Gessence.getByItemCanBeNull(itemHandler.getStackInSlot(0).getItem()));
+        if (level.getBlockEntity(pos.above()) instanceof SignBlockEntity sign && itemHandler.getStackInSlot(0).is(ModItem.getGessenceCard(Gessence.getByName("blazum")))){
+            sign.setMessage(1,new TextComponent("Code Lyoko"));
+        }
+        int consumed = getGeneratorType().isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(getGeneratorType().name())).getConsumeFE() : getGeneratorType().consumed();
         if (!this.enabled){
             this.enabled = hasEnoughtEnergyForAllProcess() && getDelay() > 0;
         }
-        if (getDelay() == 0){
+        if (getDelay() == 0 && progress == getDelayBetweenItem()){
             this.enabled = false;
             if (generateItem()){
                 progress = 0;
@@ -80,20 +92,18 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
 
             }
         }
-        if (isEnabled() && getEnergyStorage().extractEnergy(ConfigsForType.getConfigForType(getGeneratorType()).getConsumeFE(),true) > 0){
+        if (isEnabled() && getEnergyStorage().extractEnergy(consumed,true) > 0){
             setDelay(getDelay() - 1);
             progress++;
-            getEnergyStorage().extractEnergy(ConfigsForType.getConfigForType(getGeneratorType()).getConsumeFE(),false);
+            getEnergyStorage().extractEnergy(consumed,false);
             setChanged();
-            ModMessages.sendToClients(new GeneratorDelaySyncS2CPacket(getProgress(),pos));
-            ModMessages.sendToClients(new GeneratorTypeSyncS2C(getGeneratorType(),pos));
+
         }
 
     }
 
     private boolean hasEnoughtEnergyForAllProcess() {
-        return (ConfigsForType.getConfigForType(getGeneratorType()).getConsumeFE() * ConfigsForType.getConfigForType(getGeneratorType()).getDelay()) <= getEnergyStorage().getEnergyStored();
-    }
+        return (getGeneratorType().isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(getGeneratorType().name())).getConsumeFE() : getGeneratorType().consumed() * getDelayBetweenItem()) <= getEnergyStorage().getEnergyStored();    }
 
 
     private final ModEnergyStorage ENERGY_STORAGE = new ModEnergyStorage(150000,75000){
@@ -148,7 +158,7 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         ENERGY_STORAGE.setEnergy(tag.getInt("energy"));
-        this.setGeneratorType(GeneratorType.valueOf(tag.getString("generatorType")));
+        this.setGeneratorType(Generator.getByName(tag.getString("generatorType")));
         progress = tag.getInt("progress");
     }
 

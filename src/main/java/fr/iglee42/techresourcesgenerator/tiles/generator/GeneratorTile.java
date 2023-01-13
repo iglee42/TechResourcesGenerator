@@ -1,5 +1,7 @@
 package fr.iglee42.techresourcesgenerator.tiles.generator;
 
+import fr.iglee42.techresourcesgenerator.customize.Generator;
+import fr.iglee42.techresourcesgenerator.customize.Gessence;
 import fr.iglee42.techresourcesgenerator.utils.ConfigsForType;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
@@ -14,13 +16,13 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class GeneratorTile extends BlockEntity {
 
-    private GeneratorType generatorType;
-    private GessenceType type;
+    private Generator generatorType;
+    private Gessence type;
     protected boolean enabled;
     private int tick = 0;
 
     private float delay;
-    public GeneratorTile(BlockEntityType<?> p_i48289_1_, BlockState state, BlockPos pos, GeneratorType generatorType) {
+    public GeneratorTile(BlockEntityType<?> p_i48289_1_, BlockState state, BlockPos pos, Generator generatorType) {
         super(p_i48289_1_,pos,state);
         this.generatorType = generatorType;
         this.delay = getDelayBetweenItem();
@@ -69,7 +71,7 @@ public abstract class GeneratorTile extends BlockEntity {
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         tag.putInt("tick",tick);
-        if (type != null)tag.putString("gessence",type.getRessourceName());
+        if (type != null)tag.putString("gessence",type.name());
         tag.putFloat("delay",delay);
     }
 
@@ -78,18 +80,18 @@ public abstract class GeneratorTile extends BlockEntity {
         super.load(tag);
         tick = tag.getInt("tick");
         delay = tag.getFloat("delay");
-        if (tag.contains("gessence")) type = GessenceType.getByResourceName(tag.getString("gessence"));
+        if (tag.contains("gessence")) type = Gessence.getByName(tag.getString("gessence"));
     }
 
     public boolean hasGessence(){
         return type != null;
     }
 
-    public GessenceType getGessence() {
+    public Gessence getGessence() {
         return type;
     }
 
-    public void setGessence(GessenceType type){
+    public void setGessence(Gessence type){
         this.type = type;
     }
 
@@ -110,20 +112,20 @@ public abstract class GeneratorTile extends BlockEntity {
     }
 
     public int getDelayBetweenItem() {
-        return ConfigsForType.getConfigForType(generatorType).getDelay();
+        return generatorType.isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(generatorType.name())).getDelay() : generatorType.delay();
     }
 
     public int getItemsDropped() {
-        return ConfigsForType.getConfigForType(generatorType).getItemCount();
+        return generatorType.isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(generatorType.name())).getItemCount() : generatorType.itemCount();
     }
 
-    public GeneratorType getGeneratorType() {
+    public Generator getGeneratorType() {
         return generatorType;
     }
 
     public abstract boolean generateItem();
 
-    public void setGeneratorType(GeneratorType generatorType) {
+    public void setGeneratorType(Generator generatorType) {
         this.generatorType = generatorType;
     }
 }
