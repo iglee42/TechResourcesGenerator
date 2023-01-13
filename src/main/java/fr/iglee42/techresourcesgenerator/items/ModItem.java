@@ -1,9 +1,11 @@
 package fr.iglee42.techresourcesgenerator.items;
 
 import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
+import fr.iglee42.techresourcesgenerator.customize.Gessence;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -31,18 +33,20 @@ public class ModItem {
     public static final RegistryObject<Item> BLAZUM_GESSENCE = ITEMS.register("blazum_gessence", () -> new Gessence(GessenceType.BLAZUM));
     public static final RegistryObject<Item> LAVIUM_GESSENCE = ITEMS.register("lavium_gessence", () -> new Gessence(GessenceType.LAVIUM)); */
 
-    public static void createGessence(GessenceType type){
-        if (!type.isOnlyElectronic()) ITEMS.register(type.getRessourceName() + "_gessence",()-> new ItemGessence(type,TechResourcesGenerator.GENERATOR_GROUP));
-        ITEMS.register(type.getRessourceName() + "_gessence_card",()-> new ItemGessence(type,TechResourcesGenerator.CARDS_GROUP));
+    public static void createGessence(Gessence type){
+        if (type.hasNormalGessence()) ITEMS.register(type.name() + "_gessence",()-> new ItemGessence(type,TechResourcesGenerator.GENERATOR_GROUP));
+        if (type.hasElectronicGessence()) ITEMS.register(type.name() + "_gessence_card",()-> new ItemGessence(type,TechResourcesGenerator.CARDS_GROUP));
     }
     
-    public static Item getGessence(GessenceType type){
-        if (type.isOnlyElectronic()) return getGessenceCard(type);
-        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(TechResourcesGenerator.MODID , type.getRessourceName() + "_gessence"));
+    public static Item getGessence(Gessence type){
+        if (!type.hasNormalGessence()) getGessenceCard(type);
+        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(TechResourcesGenerator.MODID , type.name() + "_gessence"));
     }
 
-    public static Item getGessenceCard(GessenceType type) {
-        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(TechResourcesGenerator.MODID , type.getRessourceName() + "_gessence_card"));
+    public static Item getGessenceCard(Gessence type) {
+        if (!type.hasElectronicGessence() && type.hasNormalGessence()) getGessence(type);
+        else if (!type.hasElectronicGessence() && !type.hasNormalGessence()) return Items.AIR;
+        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(TechResourcesGenerator.MODID , type.name() + "_gessence_card"));
     }
 
 }

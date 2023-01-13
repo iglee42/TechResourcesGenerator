@@ -15,7 +15,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'eclipse'
 
 group = 'fr.iglee42'
-version = '1.19.2-1.1'
+version = '1.19.2-1.2'
 
 java {
     archivesBaseName = 'TechResourcesGenerator'
@@ -42,6 +42,7 @@ minecraft {
     // These can be tweaked, removed, or duplicated as needed.
     runs {
         client {
+            //arg '-mixin.config=techresourcesgenerator.mixins.json'
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
@@ -55,6 +56,8 @@ minecraft {
             // You can set various levels here.
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
             property 'forge.logging.console.level', 'debug'
+            //property 'mixin.env.remapRefMap', 'true'
+            //property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
 
             mods {
@@ -65,6 +68,7 @@ minecraft {
         }
 
         server {
+            //arg '-mixin.config=techresourcesgenerator.mixins.json'
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
@@ -78,6 +82,8 @@ minecraft {
             // You can set various levels here.
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
             property 'forge.logging.console.level', 'debug'
+            //property 'mixin.env.remapRefMap', 'true'
+            //property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
 
             mods {
@@ -88,6 +94,7 @@ minecraft {
         }
 
         data {
+            //arg '-mixin.config=techresourcesgenerator.mixins.json'
             workingDirectory project.file('run')
 
             // Recommended logging data for a userdev environment
@@ -101,6 +108,8 @@ minecraft {
             // You can set various levels here.
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
             property 'forge.logging.console.level', 'debug'
+            //property 'mixin.env.remapRefMap', 'true'
+            //property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
             args '--mod', 'techresourcesgenerator', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
@@ -160,6 +169,8 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.19.2-43.1.55'
 
+    //implementation 'org.spongepowered:mixin:0.8-SNAPSHOT'
+    //annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compile against the JEI API but do not include it at runtime
     compileOnly(fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}"))
@@ -187,6 +198,7 @@ dependencies {
 jar {
     manifest {
         attributes([
+                "MixinConfigs"            : "techresourcesgenerator.mixins.json",
                 "Specification-Title"     : "techresourcesgenerator",
                 //"Specification-Vendor": "techresourcesgenerator authors",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
@@ -200,6 +212,9 @@ jar {
 
 jar.finalizedBy('reobfJar')
 
+//mixin {
+//    add sourceSets.main, "techresourcesgenerator.refmap.json"
+//}
 publishing {
     publications {
         mavenJava(MavenPublication) {

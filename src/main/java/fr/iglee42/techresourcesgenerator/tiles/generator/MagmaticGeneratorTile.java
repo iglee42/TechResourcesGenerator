@@ -1,5 +1,7 @@
 package fr.iglee42.techresourcesgenerator.tiles.generator;
 
+import fr.iglee42.techresourcesgenerator.customize.Generator;
+import fr.iglee42.techresourcesgenerator.customize.Gessence;
 import fr.iglee42.techresourcesgenerator.items.ItemGessence;
 import fr.iglee42.techresourcesgenerator.network.packets.GeneratorGenerateReturnS2CPacket;
 import fr.iglee42.techresourcesgenerator.tiles.ModBlockEntities;
@@ -22,7 +24,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
@@ -59,11 +63,11 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
 
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
-    public MagmaticGeneratorTile(BlockState state, BlockPos pos,GeneratorType generatorType) {
+    public MagmaticGeneratorTile(BlockState state, BlockPos pos, Generator generatorType) {
         super(ModBlockEntities.MAGMATIC_GENERATOR.get(), state, pos,generatorType);
     }
     public MagmaticGeneratorTile(BlockPos pos, BlockState state) {
-        this( state, pos,GeneratorType.IRON);
+        this( state, pos,Generator.getByName("iron"));
     }
 
     @Override
@@ -73,7 +77,8 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
 
     @Override
     protected void second(Level level, BlockPos pos, BlockState state, GeneratorTile tile) {
-        this.setGessence(GessenceType.getByItemCanBeNull(itemHandler.getStackInSlot(2).getItem()));
+
+        this.setGessence(Gessence.getByItemCanBeNull(itemHandler.getStackInSlot(2).getItem()));
         if (LAVA_TANK.getFluidInTank(0).getAmount() <= 7000){
             if (level.getFluidState(pos.offset(0,1,0)).is(Fluids.LAVA)){
                 level.setBlockAndUpdate(pos.offset(0,1,0), Blocks.AIR.defaultBlockState());
@@ -174,7 +179,7 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         LAVA_TANK.readFromNBT(tag.getCompound("lavatank"));
-        this.setGeneratorType(GeneratorType.valueOf(tag.getString("generatorType")));
+        if (tag.contains("generatorType"))this.setGeneratorType(Generator.getByName(tag.getString("generatorType")));
     }
 
     @Override
@@ -215,7 +220,7 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
         CompoundTag tank = new CompoundTag();
         LAVA_TANK.writeToNBT(tank);
         tag.put("lavatank",tank);
-        tag.putString("generatorType",getGeneratorType().name());
+        if (this.getGeneratorType() != null)tag.putString("generatorType",getGeneratorType().name());
     }
     public void drops() {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
