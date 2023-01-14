@@ -86,7 +86,7 @@ public class GeneratorBlock extends BaseEntityBlock {
             }
             if (ItemGessence.isGessence(player.getMainHandItem().getItem())) {
                 Gessence type = Gessence.getByItem(player.getMainHandItem().getItem());
-                if (type.getMinimumGenerator().getOrder() <= GeneratorType.BASIC.getOrder()) {
+                if (type.getMinimumGenerator().getOrder() <= this.type.getOrder()) {
                     if (te.hasGessence()) {
                         player.displayClientMessage(new TranslatableComponent("tooltip.techresourcesgenerator.has_gessence").withStyle(ChatFormatting.RED), true);
                         return InteractionResult.FAIL;
