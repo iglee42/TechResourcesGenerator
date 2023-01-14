@@ -1,11 +1,13 @@
 package fr.iglee42.techresourcesgenerator.menu;
 
 import fr.iglee42.techresourcesgenerator.blocks.ModBlocks;
+import fr.iglee42.techresourcesgenerator.customize.Generator;
 import fr.iglee42.techresourcesgenerator.menu.slots.BucketSlot;
 import fr.iglee42.techresourcesgenerator.menu.slots.GessenceSlot;
 import fr.iglee42.techresourcesgenerator.menu.slots.OutputSlot;
 import fr.iglee42.techresourcesgenerator.tiles.generator.MagmaticGeneratorTile;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -26,10 +28,10 @@ public class MagmaticGeneratorMenu extends Container {
     private float delay;
     private ITextComponent errorMessage = new StringTextComponent("");
 
-    private GeneratorType generator;
+    private Generator generator;
 
 
-    public MagmaticGeneratorMenu(int id, PlayerInventory inv, TileEntity entity, GeneratorType generator) {
+    public MagmaticGeneratorMenu(int id, PlayerInventory inv, TileEntity entity, Generator generator) {
         super(ModMenuTypes.MAGMATIC_GENERATOR_MENU.get(), id);
         blockEntity = (MagmaticGeneratorTile) entity;
         this.level = inv.player.level;
@@ -111,10 +113,10 @@ public class MagmaticGeneratorMenu extends Container {
 
     @Override
     public boolean stillValid(PlayerEntity player) {
-        return stillValid(IWorldPosCallable.create(level, blockEntity.getBlockPos()), player, ModBlocks.IRON_GENERATOR.get()) ||
-         stillValid(IWorldPosCallable.create(level, blockEntity.getBlockPos()), player, ModBlocks.GOLD_GENERATOR.get()) ||
-         stillValid(IWorldPosCallable.create(level, blockEntity.getBlockPos()), player, ModBlocks.DIAMOND_GENERATOR.get()) ||
-         stillValid(IWorldPosCallable.create(level, blockEntity.getBlockPos()), player, ModBlocks.NETHERITE_GENERATOR.get());
+        for (Block block : ModBlocks.getAllGeneratorForType("magmatic")) {
+            if (stillValid(IWorldPosCallable.create(level,blockEntity.getBlockPos()),player,block)) return true;
+        }
+        return false;
     }
 
     private void addPlayerInventory(PlayerInventory playerInventory) {

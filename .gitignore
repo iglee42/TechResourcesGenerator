@@ -116,3 +116,7 @@ run/
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
+/src/main/java/fr/iglee42/techresourcesgenerator/events/EasterClientsEvents.java
+/src/main/resources/assets/techresourcesgenerator/sounds/easter.ogg
+/src/main/resources/assets/techresourcesgenerator/models/item/easter.json
+/src/main/resources/assets/techresourcesgenerator/textures/item/easter.png

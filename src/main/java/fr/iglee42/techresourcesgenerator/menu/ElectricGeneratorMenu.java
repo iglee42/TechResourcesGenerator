@@ -1,11 +1,13 @@
 package fr.iglee42.techresourcesgenerator.menu;
 
 import fr.iglee42.techresourcesgenerator.blocks.ModBlocks;
+import fr.iglee42.techresourcesgenerator.customize.Generator;
 import fr.iglee42.techresourcesgenerator.menu.slots.GessenceSlot;
 import fr.iglee42.techresourcesgenerator.menu.slots.OutputSlot;
 import fr.iglee42.techresourcesgenerator.tiles.generator.ElectricGeneratorTile;
 import fr.iglee42.techresourcesgenerator.utils.ConfigsForType;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -24,10 +26,10 @@ public class ElectricGeneratorMenu extends Container {
     private float delay;
     private ITextComponent errorMessage = new StringTextComponent("");
 
-    private GeneratorType generator;
+    private Generator generator;
 
 
-    public ElectricGeneratorMenu(int id, PlayerInventory inv, TileEntity entity, GeneratorType generator) {
+    public ElectricGeneratorMenu(int id, PlayerInventory inv, TileEntity entity, Generator generator) {
         super(ModMenuTypes.ELECTRIC_GENERATOR_MENU.get(), id);
         blockEntity = (ElectricGeneratorTile) entity;
         this.level = inv.player.level;
@@ -47,8 +49,8 @@ public class ElectricGeneratorMenu extends Container {
 
     public int getScaledProgress() {
         int progress = (int)getDelay();
-        int maxProgress = ConfigsForType.getConfigForType(blockEntity.getGeneratorType()).getDelay();  // Max Progress 3
-        int progressArrowSize = 50; // This is the height in pixels of your arrow
+        int maxProgress = generator.isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(generator.name())).getDelay() : generator.delay();  // Max Progress 3
+        int progressArrowSize = 60; // This is the height in pixels of your arrow
 
         return maxProgress != 0 ? progress * (progressArrowSize / maxProgress) : 0;
     }
@@ -106,10 +108,10 @@ public class ElectricGeneratorMenu extends Container {
 
     @Override
     public boolean stillValid(PlayerEntity player) {
-        return stillValid(IWorldPosCallable.create(level, blockEntity.getBlockPos()), player, ModBlocks.MODIUM_GENERATOR.get()) ||
-         stillValid(IWorldPosCallable.create(level, blockEntity.getBlockPos()), player, ModBlocks.DERIUM_GENERATOR.get()) ||
-         stillValid(IWorldPosCallable.create(level, blockEntity.getBlockPos()), player, ModBlocks.BLAZUM_GENERATOR.get()) ||
-         stillValid(IWorldPosCallable.create(level, blockEntity.getBlockPos()), player, ModBlocks.LAVIUM_GENERATOR.get());
+        for (Block block : ModBlocks.getAllGeneratorForType("electric")) {
+            if (stillValid(IWorldPosCallable.create(level,blockEntity.getBlockPos()),player,block)) return true;
+        }
+        return false;
     }
 
     private void addPlayerInventory(PlayerInventory playerInventory) {
@@ -146,11 +148,11 @@ public class ElectricGeneratorMenu extends Container {
         return errorMessage;
     }
 
-    public GeneratorType getGeneratorType() {
+    public Generator getGeneratorType() {
         return generator;
     }
 
-    public void setGeneratorType(GeneratorType type) {
+    public void setGeneratorType(Generator type) {
         this.generator = type;
     }
 }

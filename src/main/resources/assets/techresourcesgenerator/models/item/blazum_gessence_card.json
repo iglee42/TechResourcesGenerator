@@ -2,5 +2,13 @@
 	"parent": "techresourcesgenerator:item/gessence_card",
 	"textures": {
 		"1": "techresourcesbase:item/blazum_ingot"
-	}
+	},
+	"overrides": [
+		{
+			"predicate": {
+				"techresourcesgenerator:easter": 1.0
+			},
+			"model": "techresourcesgenerator:item/easter"
+		}
+	]
 }

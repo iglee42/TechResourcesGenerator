@@ -1,6 +1,7 @@
 package fr.iglee42.techresourcesgenerator.blocks.generator.manual;
 
 import fr.iglee42.techresourcesgenerator.blocks.generator.GeneratorBlock;
+import fr.iglee42.techresourcesgenerator.customize.Generator;
 import fr.iglee42.techresourcesgenerator.tiles.generator.MagmaticGeneratorTile;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import net.minecraft.block.BlockState;
@@ -21,8 +22,8 @@ import java.util.List;
 public class MagmaticGenerator extends GeneratorBlock {
 
 
-    public MagmaticGenerator(GeneratorType generatorType) {
-        super(Properties.of(Material.METAL).strength(4.0F, 6.0F).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().harvestLevel(generatorType == GeneratorType.NETHERITE ? 3 : generatorType == GeneratorType.DIAMOND || generatorType == GeneratorType.GOLD ? 2 : 1).harvestTool(ToolType.PICKAXE),generatorType);
+    public MagmaticGenerator(Generator generatorType) {
+        super(Properties.of(Material.METAL).strength(4.0F, 6.0F).sound(SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().harvestLevel(2).harvestTool(ToolType.PICKAXE),generatorType);
     }
 
     @Nullable
