@@ -3,10 +3,12 @@ package fr.iglee42.techresourcesgenerator.client.renderer.screen;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
 import fr.iglee42.techresourcesgenerator.client.renderer.screen.render.EnergyInfoArea;
+import fr.iglee42.techresourcesgenerator.customize.Generator;
 import fr.iglee42.techresourcesgenerator.menu.ElectricGeneratorMenu;
 import fr.iglee42.techresourcesgenerator.network.ModMessages;
 import fr.iglee42.techresourcesgenerator.network.packets.GeneratorDelaySyncC2SPacket;
 import fr.iglee42.techresourcesgenerator.utils.ConfigsForType;
+import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import fr.iglee42.techresourcesgenerator.utils.MouseUtil;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -34,7 +36,7 @@ public class ElectricGeneratorScreen extends ContainerScreen<ElectricGeneratorMe
     private void assignEnergyRenderer() {
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
-        renderer = new EnergyInfoArea( x + 10, y+14,menu.blockEntity.getEnergyStorage(),16,62);
+        renderer = new EnergyInfoArea( x + 10, y+15,menu.blockEntity.getEnergyStorage(),16,61);
     }
 
 
@@ -59,7 +61,7 @@ public class ElectricGeneratorScreen extends ContainerScreen<ElectricGeneratorMe
     }
 
     private void renderEnergyAreaTooltips(MatrixStack pMatrixStack, int pMouseX, int pMouseY, int x, int y) {
-        if(isMouseAboveArea(pMouseX, pMouseY, x, y, 10, 14,16,62)) {
+        if(isMouseAboveArea(pMouseX, pMouseY, x, y, 10, 15,16,61)) {
             renderTooltip(pMatrixStack, renderer.getTooltips().get(0), pMouseX - x - 30, pMouseY - y);
 
         }
@@ -81,7 +83,8 @@ public class ElectricGeneratorScreen extends ContainerScreen<ElectricGeneratorMe
 
 
     private void renderProgressArrow(MatrixStack pMatrixStack, int x, int y) {
-        if(menu.getDelay() <= ConfigsForType.getConfigForType(menu.blockEntity.getGeneratorType()).getDelay()) {
+        Generator generatorType = menu.blockEntity.getGeneratorType();
+        if(menu.getDelay() <= (generatorType.isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(generatorType.name())).getDelay() : generatorType.delay())) {
             blit(pMatrixStack, x + 87 , y + 41, 176, 0, menu.getScaledProgress(), 8);
         }
     }

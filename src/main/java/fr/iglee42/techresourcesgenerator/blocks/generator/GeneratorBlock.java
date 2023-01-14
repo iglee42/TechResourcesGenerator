@@ -1,6 +1,8 @@
 package fr.iglee42.techresourcesgenerator.blocks.generator;
 
 import fr.iglee42.techresourcesgenerator.blocks.generator.automatic.ElectricGenerator;
+import fr.iglee42.techresourcesgenerator.customize.Generator;
+import fr.iglee42.techresourcesgenerator.customize.Gessence;
 import fr.iglee42.techresourcesgenerator.items.ItemGessence;
 import fr.iglee42.techresourcesgenerator.items.ModItem;
 import fr.iglee42.techresourcesgenerator.tiles.generator.ElectricGeneratorTile;
@@ -38,10 +40,11 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 public class GeneratorBlock extends Block {
-    private GeneratorType type;
-    public GeneratorBlock(AbstractBlock.Properties properties, GeneratorType generatorType) {
+    private Generator type;
+    public GeneratorBlock(AbstractBlock.Properties properties, Generator generatorType) {
         super(properties);
         this.type = generatorType;
     }
@@ -61,8 +64,8 @@ public class GeneratorBlock extends Block {
                 }
             }
             if (ItemGessence.isGessence(player.getMainHandItem().getItem())) {
-                GessenceType type = GessenceType.getByItem(player.getMainHandItem().getItem());
-                if (type.getMinimumGenerator().getOrder() <= GeneratorType.BASIC.getOrder()) {
+                Gessence type = Gessence.getByItem(player.getMainHandItem().getItem());
+                if (type.getMinimumGenerator().getOrder() <= this.type.getOrder()) {
                     if (te.hasGessence()) {
                         player.displayClientMessage(new TranslationTextComponent("tooltip.techresourcesgenerator.has_gessence").withStyle(TextFormatting.RED), true);
                         return ActionResultType.FAIL;
@@ -153,15 +156,14 @@ public class GeneratorBlock extends Block {
     @Override
     public void appendHoverText(ItemStack it, @Nullable IBlockReader getter, List<ITextComponent> components, ITooltipFlag p_49819_) {
         super.appendHoverText(it, getter, components, p_49819_);
-        ConfigsForType config = ConfigsForType.getConfigForType(type);
-        components.add(new StringTextComponent("Items dropped : ").withStyle(TextFormatting.YELLOW).append(""+config.getItemCount()).withStyle(TextFormatting.GOLD));
-        components.add(new StringTextComponent("Delay : ").withStyle(TextFormatting.YELLOW).append(""+ config.getDelay()).withStyle(TextFormatting.GOLD));
-        if (type == GeneratorType.BASIC){
+        components.add(new StringTextComponent("Items dropped : ").withStyle(TextFormatting.YELLOW).append(""+(type.isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(type.name())).getItemCount() : type.itemCount())).withStyle(TextFormatting.GOLD));
+        components.add(new StringTextComponent("Delay : ").withStyle(TextFormatting.YELLOW).append(""+ (type.isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(type.name())).getDelay() : type.delay())).withStyle(TextFormatting.GOLD));
+        if (Objects.equals(type.generatorType(), "basic")){
             components.add(new StringTextComponent("The gessence is consume when the delay is 0").withStyle(TextFormatting.GOLD));
         }
     }
 
-    public GeneratorType getType() {
+    public Generator getType() {
         return type;
     }
 }

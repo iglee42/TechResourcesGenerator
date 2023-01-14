@@ -1,5 +1,6 @@
 package fr.iglee42.techresourcesgenerator.network.packets;
 
+import fr.iglee42.techresourcesgenerator.customize.Generator;
 import fr.iglee42.techresourcesgenerator.menu.ElectricGeneratorMenu;
 import fr.iglee42.techresourcesgenerator.tiles.generator.ElectricGeneratorTile;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
@@ -12,15 +13,15 @@ import java.util.function.Supplier;
 
 public class GeneratorTypeSyncS2C {
 
-    private final GeneratorType type;
+    private final Generator type;
     private final BlockPos pos;
 
     public GeneratorTypeSyncS2C(PacketBuffer buf){
-        this.type = GeneratorType.getByOrder(buf.readInt());
+        this.type = Generator.getByOrder(buf.readInt());
         this.pos = buf.readBlockPos();
     }
 
-    public GeneratorTypeSyncS2C(GeneratorType type, BlockPos worldPosition) {
+    public GeneratorTypeSyncS2C(Generator type, BlockPos worldPosition) {
         this.type = type;
         this.pos = worldPosition;
     }

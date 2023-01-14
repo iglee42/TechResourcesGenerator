@@ -14,8 +14,8 @@ public class ModBlockEntities {
     public static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, TechResourcesGenerator.MODID);
 
     public static final RegistryObject<TileEntityType<CardInfuserTile>> CARD_INFUSER = TILE_ENTITIES.register("card_infuser_tile",()-> TileEntityType.Builder.of(CardInfuserTile::new,ModBlocks.CARD_INFUSER.get()).build(null));
-    public static final RegistryObject<TileEntityType<ManualGeneratorTile>> MANUAL_GENERATOR =TILE_ENTITIES.register("manual_generator_tile",() -> TileEntityType.Builder.of(ManualGeneratorTile::new, ModBlocks.BASIC_GENERATOR.get()).build(null));
-    public static final RegistryObject<TileEntityType<MagmaticGeneratorTile>> MAGMATIC_GENERATOR =TILE_ENTITIES.register("magmatic_generator_tile",() -> TileEntityType.Builder.of(MagmaticGeneratorTile::new,ModBlocks.IRON_GENERATOR.get(),ModBlocks.GOLD_GENERATOR.get(),ModBlocks.DIAMOND_GENERATOR.get(),ModBlocks.NETHERITE_GENERATOR.get()).build(null));
-    public static final RegistryObject<TileEntityType<ElectricGeneratorTile>> ELECTRIC_GENERATOR =TILE_ENTITIES.register("electric_generator_tile",() -> TileEntityType.Builder.of(ElectricGeneratorTile::new,ModBlocks.MODIUM_GENERATOR.get(),ModBlocks.DERIUM_GENERATOR.get(),ModBlocks.BLAZUM_GENERATOR.get(),ModBlocks.LAVIUM_GENERATOR.get()).build(null));
+    public static final RegistryObject<TileEntityType<ManualGeneratorTile>> MANUAL_GENERATOR =TILE_ENTITIES.register("manual_generator_tile",() -> TileEntityType.Builder.of(ManualGeneratorTile::new, ModBlocks.getAllGeneratorForType("basic")).build(null));
+    public static final RegistryObject<TileEntityType<MagmaticGeneratorTile>> MAGMATIC_GENERATOR =TILE_ENTITIES.register("magmatic_generator_tile",() -> TileEntityType.Builder.of(MagmaticGeneratorTile::new,ModBlocks.getAllGeneratorForType("magmatic")).build(null));
+    public static final RegistryObject<TileEntityType<ElectricGeneratorTile>> ELECTRIC_GENERATOR =TILE_ENTITIES.register("electric_generator_tile",() -> TileEntityType.Builder.of(ElectricGeneratorTile::new,ModBlocks.getAllGeneratorForType("electric")).build(null));
 
 }

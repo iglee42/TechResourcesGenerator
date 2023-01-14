@@ -1,5 +1,6 @@
 package fr.iglee42.techresourcesgenerator.tiles.generator;
 
+import fr.iglee42.techresourcesgenerator.customize.Generator;
 import fr.iglee42.techresourcesgenerator.tiles.ModBlockEntities;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import net.minecraft.block.Block;
@@ -10,8 +11,11 @@ import net.minecraft.world.World;
 
 public class ManualGeneratorTile extends GeneratorTile {
 
+    public ManualGeneratorTile(Generator type) {
+        super(ModBlockEntities.MANUAL_GENERATOR.get(), type);
+    }
     public ManualGeneratorTile() {
-        super(ModBlockEntities.MANUAL_GENERATOR.get(), GeneratorType.BASIC);
+        this(Generator.getByName("basic"));
     }
 
 

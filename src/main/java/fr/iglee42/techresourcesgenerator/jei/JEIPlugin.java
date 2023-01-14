@@ -1,6 +1,10 @@
 package fr.iglee42.techresourcesgenerator.jei;
 
+import fr.iglee42.techresourcesbase.common.init.ModBlock;
 import fr.iglee42.techresourcesgenerator.blocks.ModBlocks;
+import fr.iglee42.techresourcesgenerator.customize.Generator;
+import fr.iglee42.techresourcesgenerator.customize.Types;
+import fr.iglee42.techresourcesgenerator.items.ModItem;
 import fr.iglee42.techresourcesgenerator.recipes.CardInfuserRecipe;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -11,6 +15,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
@@ -31,6 +36,8 @@ public class JEIPlugin implements IModPlugin {
     public void registerCategories(IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(new
                 CardInfuserRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
+        registration.addRecipeCategories(new
+                GessenceOutputRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
@@ -46,9 +53,16 @@ public class JEIPlugin implements IModPlugin {
                         .stream()
                         .map(r -> (CardInfuserRecipe) r)
                         .collect(Collectors.toList()),CardInfuserRecipeCategory.UID);
-        registration.addIngredientInfo(new ItemStack(ModBlocks.BASIC_GENERATOR.get()),VanillaTypes.ITEM,new StringTextComponent("Right click with a gessence to put in the generator. \n\nSneak + Right Click to remove the gessence in the generator \n\nRight click with an empty hand to decrease the delay."));
-        List<Block> generator = Arrays.asList(ModBlocks.IRON_GENERATOR.get(),ModBlocks.GOLD_GENERATOR.get(),ModBlocks.DIAMOND_GENERATOR.get(),ModBlocks.NETHERITE_GENERATOR.get(),
-                ModBlocks.MODIUM_GENERATOR.get(),ModBlocks.DERIUM_GENERATOR.get(),ModBlocks.BLAZUM_GENERATOR.get(),ModBlocks.LAVIUM_GENERATOR.get());
+        List<IJeiGessenceOutputRecipe> gessenceOutputRecipes = new ArrayList<>();
+        Types.GESSENCES.forEach(g->{
+            if (g.hasNormalGessence())gessenceOutputRecipes.add(new GessenceOutputRecipe(Ingredient.of(ModItem.getGessence(g)),Ingredient.of(g.getItem())));
+            if (g.hasElectronicGessence())gessenceOutputRecipes.add(new GessenceOutputRecipe(Ingredient.of(ModItem.getGessenceCard(g)),Ingredient.of(g.getItem())));
+        });
+        registration.addRecipes(gessenceOutputRecipes,GessenceOutputRecipeCategory.UID);
+        registration.addIngredientInfo(new ItemStack(ModBlocks.getGenerator(Generator.getByName("basic"))),VanillaTypes.ITEM,new StringTextComponent("Right click with a gessence to put in the generator. \n\nSneak + Right Click to remove the gessence in the generator \n\nRight click with an empty hand to decrease the delay."));
+        List<Block> generator = new ArrayList<>();
+        generator.addAll(Arrays.asList(ModBlocks.getAllGeneratorForType("magmatic")));
+        generator.addAll(Arrays.asList(ModBlocks.getAllGeneratorForType("electric")));
         List<ItemStack> stacks = new ArrayList<>();
         generator.forEach(g->stacks.add(new ItemStack(g)));
         registration.addIngredientInfo(stacks,VanillaTypes.ITEM,new StringTextComponent("Right click to open the gui"));

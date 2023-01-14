@@ -34,7 +34,7 @@ public class GeneratorDelaySyncS2CPacket {
                 if(Minecraft.getInstance().player.containerMenu instanceof MagmaticGeneratorMenu) {
                     ((MagmaticGeneratorMenu)Minecraft.getInstance().player.containerMenu).setDelay(this.delay);
                 } else if (Minecraft.getInstance().player.containerMenu instanceof ElectricGeneratorMenu ){
-                    ((MagmaticGeneratorMenu)Minecraft.getInstance().player.containerMenu).setDelay(this.delay);
+                    ((ElectricGeneratorMenu)Minecraft.getInstance().player.containerMenu).setDelay(this.delay);
                 }
         });
         return true;

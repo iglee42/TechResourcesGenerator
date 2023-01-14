@@ -1,6 +1,7 @@
 package fr.iglee42.techresourcesgenerator.menu;
 
 import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
+import fr.iglee42.techresourcesgenerator.customize.Generator;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.util.math.BlockPos;
@@ -18,13 +19,13 @@ public class ModMenuTypes {
                     () -> IForgeContainerType.create(((windowId, inv, data) -> {
                         BlockPos pos = data.readBlockPos();
                         World world = inv.player.level;
-                        return new MagmaticGeneratorMenu(windowId,  inv,world.getBlockEntity(pos), GeneratorType.IRON);
+                        return new MagmaticGeneratorMenu(windowId,  inv,world.getBlockEntity(pos), Generator.getByName("iron"));
                     })));
     public static final RegistryObject<ContainerType<ElectricGeneratorMenu>> ELECTRIC_GENERATOR_MENU = MENUS.register("electric_generator_menu",
             () -> IForgeContainerType.create(((windowId, inv, data) -> {
                 BlockPos pos = data.readBlockPos();
                 World world = inv.player.level;
-                return new ElectricGeneratorMenu(windowId,  inv,world.getBlockEntity(pos), GeneratorType.IRON);
+                return new ElectricGeneratorMenu(windowId,  inv,world.getBlockEntity(pos), Generator.getByName("modium"));
             })));
 
 
