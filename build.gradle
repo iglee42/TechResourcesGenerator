@@ -198,7 +198,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "MixinConfigs"            : "techresourcesgenerator.mixins.json",
+                //"MixinConfigs"            : "techresourcesgenerator.mixins.json",
                 "Specification-Title"     : "techresourcesgenerator",
                 //"Specification-Vendor": "techresourcesgenerator authors",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
