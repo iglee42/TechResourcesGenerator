@@ -1,6 +1,6 @@
 {
   "type": "techresourcesgenerator:card_infuser",
   "base": "techresourcesgenerator:gessence_card",
-  "infuser": "techresourcesbase:blazum_block",
+  "infuser": "igleelib:blazum_block",
   "result": "techresourcesgenerator:blazum_gessence_card"
 }

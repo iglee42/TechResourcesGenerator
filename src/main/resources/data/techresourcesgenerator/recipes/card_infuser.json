@@ -10,13 +10,13 @@
       "item": "techresourcesgenerator:netherite_generator"
     },
     "D": {
-      "item": "techresourcesbase:derium_ingot"
+      "item": "igleelib:derium_ingot"
     },
     "B": {
       "item": "techresourcesgenerator:base_gessence"
     },
     "L": {
-      "item": "techresourcesbase:lavium_ingot"
+      "item": "igleelib:lavium_ingot"
     }
   },
   "result": {
