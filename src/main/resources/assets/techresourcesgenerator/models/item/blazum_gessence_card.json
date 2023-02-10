@@ -1,7 +1,7 @@
 {
 	"parent": "techresourcesgenerator:item/gessence_card",
 	"textures": {
-		"1": "techresourcesbase:item/blazum_ingot"
+		"1": "igleelib:item/blazum_ingot"
 	},
 	"overrides": [
 		{

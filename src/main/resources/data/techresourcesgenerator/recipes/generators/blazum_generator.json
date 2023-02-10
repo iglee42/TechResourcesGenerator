@@ -4,7 +4,7 @@
     "item": "techresourcesgenerator:derium_generator"
   },
   "addition": {
-    "item": "techresourcesbase:blazum_block"
+    "item": "igleelib:blazum_block"
   },
   "result": {
     "item": "techresourcesgenerator:blazum_generator"

@@ -2,14 +2,12 @@ package fr.iglee42.techresourcesgenerator.customize;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import fr.iglee42.techresourcesbase.utils.JsonHelper;
+import fr.iglee42.igleelib.api.utils.JsonHelper;
 import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
 import fr.iglee42.techresourcesgenerator.blocks.ModBlock;
 import fr.iglee42.techresourcesgenerator.items.ModItem;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
 import fr.iglee42.techresourcesgenerator.utils.GessenceType;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;

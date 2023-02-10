@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench and by iglee42",
 	"textures": {
 		"0": "techresourcesgenerator:block/generator_base",
-		"1": "techresourcesbase:block/blazum_block",
+		"1": "igleelib:block/blazum_block",
 		"particle": "techresourcesgenerator:block/generator_base"
 	},
 	"elements": [
