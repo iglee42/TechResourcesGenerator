@@ -4,7 +4,7 @@
     "item": "techresourcesgenerator:modium_generator"
   },
   "addition": {
-    "item": "techresourcesbase:derium_block"
+    "item": "igleelib:derium_block"
   },
   "result": {
     "item": "techresourcesgenerator:derium_generator"

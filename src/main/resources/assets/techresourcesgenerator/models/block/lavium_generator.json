@@ -1,7 +1,7 @@
 {
 	"parent": "techresourcesgenerator:block/electric_generator",
 	"textures": {
-		"1": "techresourcesbase:block/lavium_block",
-		"particle": "techresourcesbase:block/lavium_block"
+		"1": "igleelib:block/lavium_block",
+		"particle": "igleelib:block/lavium_block"
 	}
 }

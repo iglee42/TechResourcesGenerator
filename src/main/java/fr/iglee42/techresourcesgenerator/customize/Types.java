@@ -2,7 +2,7 @@ package fr.iglee42.techresourcesgenerator.customize;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import fr.iglee42.techresourcesbase.api.utils.JsonHelper;
+import fr.iglee42.igleelib.api.utils.JsonHelper;
 import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
 import fr.iglee42.techresourcesgenerator.blocks.ModBlocks;
 import fr.iglee42.techresourcesgenerator.items.ModItem;

@@ -15,7 +15,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'eclipse'
 
 group = 'fr.iglee42'
-version = '1.16.5-1.1'
+version = '1.16.5-1.1.1'
 
 java {
     archivesBaseName = 'TechResourcesGenerator'
@@ -137,7 +137,7 @@ repositories {
     }
     maven {
         name = 'bytesafe'
-        url 'https://techresources.bytesafe.dev/maven/techresources-base/'
+        url 'https://techresources.bytesafe.dev/maven/library/'
         credentials {
             username = 'bytesafe'
             password = '01GH6W3DDQH6TAKFT9M26XBXC6'
@@ -167,7 +167,7 @@ dependencies {
     runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
     // implementation fg.deobf("com.tterrag.registrate:Registrate:MC${mc_version}-${registrate_version}") // Adds registrate as a dependency
 
-    implementation fg.deobf("fr.iglee42.techresourcesbase:TechResourcesBase:${mc_version}-${lib_version}")
+    implementation fg.deobf("fr.iglee42.igleelib:IgleeLib:${mc_version}-${lib_version}")
 
     implementation(fg.deobf("curse.maven:mekanism-268560:3659389"))
     implementation(fg.deobf("curse.maven:pipez-443900:3569511"))

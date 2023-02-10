@@ -1,6 +1,6 @@
 package fr.iglee42.techresourcesgenerator.tiles;
 
-import fr.iglee42.techresourcesbase.api.blockentities.SecondTileEntity;
+import fr.iglee42.igleelib.api.blockentities.SecondTileEntity;
 import fr.iglee42.techresourcesgenerator.blocks.BlockCardInfuser;
 import fr.iglee42.techresourcesgenerator.network.ModMessages;
 import fr.iglee42.techresourcesgenerator.network.packets.CardInfuserProgressSyncS2CPacket;
