@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static fr.iglee42.techresourcesbase.utils.ModsUtils.getUpperName;
+import static fr.iglee42.igleelib.api.utils.ModsUtils.getUpperName;
 
 public class LangsGenerator {
 

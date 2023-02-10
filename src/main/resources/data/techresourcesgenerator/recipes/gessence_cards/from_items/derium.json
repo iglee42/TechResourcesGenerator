@@ -1,6 +1,6 @@
 {
   "type": "techresourcesgenerator:card_infuser",
   "base": "techresourcesgenerator:gessence_card",
-  "infuser": "techresourcesbase:derium_block",
+  "infuser": "igleelib:derium_block",
   "result": "techresourcesgenerator:derium_gessence_card"
 }

@@ -1,7 +1,7 @@
 {
 	"parent": "techresourcesgenerator:block/electric_generator",
 	"textures": {
-		"1": "techresourcesbase:block/modium_block",
-		"particle": "techresourcesbase:block/modium_block"
+		"1": "igleelib:block/modium_block",
+		"particle": "igleelib:block/modium_block"
 	}
 }
