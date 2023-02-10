@@ -1,7 +1,7 @@
 {
 	"parent": "techresourcesgenerator:block/electric_generator",
 	"textures": {
-		"1": "techresourcesbase:block/derium_block",
-		"particle": "techresourcesbase:block/derium_block"
+		"1": "igleelib:block/derium_block",
+		"particle": "igleelib:block/derium_block"
 	}
 }

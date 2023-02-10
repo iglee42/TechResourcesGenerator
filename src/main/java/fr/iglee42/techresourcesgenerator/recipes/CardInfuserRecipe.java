@@ -1,7 +1,7 @@
 package fr.iglee42.techresourcesgenerator.recipes;
 
 import com.google.gson.JsonObject;
-import fr.iglee42.techresourcesbase.api.utils.JsonHelper;
+import fr.iglee42.igleelib.api.utils.JsonHelper;
 import fr.iglee42.techresourcesgenerator.TechResourcesGenerator;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;

@@ -4,7 +4,7 @@
     "item": "techresourcesgenerator:blazum_generator"
   },
   "addition": {
-    "item": "techresourcesbase:lavium_block"
+    "item": "igleelib:lavium_block"
   },
   "result": {
     "item": "techresourcesgenerator:lavium_generator"
