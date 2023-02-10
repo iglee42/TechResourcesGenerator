@@ -1,7 +1,7 @@
 package fr.iglee42.techresourcesgenerator;
 
 import com.google.common.collect.Lists;
-import fr.iglee42.techresourcesbase.common.init.ModBlock;
+import fr.iglee42.igleelib.common.init.ModBlock;
 import fr.iglee42.techresourcesgenerator.blocks.ModBlocks;
 import fr.iglee42.techresourcesgenerator.client.renderer.blockentities.CardInfuserRenderer;
 import fr.iglee42.techresourcesgenerator.client.renderer.blockentities.ElectricGeneratorRenderer;

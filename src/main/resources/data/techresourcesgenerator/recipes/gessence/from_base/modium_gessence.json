@@ -4,7 +4,7 @@
     "item": "techresourcesgenerator:base_gessence"
   },
   "addition": {
-    "item": "techresourcesbase:modium_block"
+    "item": "igleelib:modium_block"
   },
   "result": {
     "item": "techresourcesgenerator:modium_gessence"

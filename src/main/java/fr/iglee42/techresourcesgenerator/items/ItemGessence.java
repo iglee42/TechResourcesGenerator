@@ -1,6 +1,6 @@
 package fr.iglee42.techresourcesgenerator.items;
 
-import fr.iglee42.techresourcesbase.api.utils.ModsUtils;
+import fr.iglee42.igleelib.api.utils.ModsUtils;
 import fr.iglee42.techresourcesgenerator.customize.Gessence;
 import fr.iglee42.techresourcesgenerator.customize.Types;
 import fr.iglee42.techresourcesgenerator.utils.GeneratorType;

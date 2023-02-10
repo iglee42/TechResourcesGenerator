@@ -1,6 +1,6 @@
 package fr.iglee42.techresourcesgenerator.jei;
 
-import fr.iglee42.techresourcesbase.common.init.ModBlock;
+import fr.iglee42.igleelib.common.init.ModBlock;
 import fr.iglee42.techresourcesgenerator.blocks.ModBlocks;
 import fr.iglee42.techresourcesgenerator.customize.Generator;
 import fr.iglee42.techresourcesgenerator.customize.Types;
