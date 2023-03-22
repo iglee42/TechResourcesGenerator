@@ -1,26 +1,28 @@
 package fr.iglee42.techresourcesgenerator.utils;
 
 import fr.iglee42.techresourcesgenerator.config.CommonConfigs;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.Arrays;
 
 public enum ConfigsForType {
 
-    BASIC(GeneratorType.BASIC,CommonConfigs.BASIC_GENERATOR_DELAY.get(),CommonConfigs.BASIC_GENERATOR_GENERATED_ITEM_COUNT.get(),0),
-    IRON(GeneratorType.IRON,CommonConfigs.IRON_GENERATOR_DELAY.get(),CommonConfigs.IRON_GENERATOR_GENERATED_ITEM_COUNT.get(),0),
-    GOLD(GeneratorType.GOLD,CommonConfigs.GOLD_GENERATOR_DELAY.get(),CommonConfigs.GOLD_GENERATOR_GENERATED_ITEM_COUNT.get(),0),
-    DIAMOND(GeneratorType.DIAMOND,CommonConfigs.DIAMOND_GENERATOR_DELAY.get(),CommonConfigs.DIAMOND_GENERATOR_GENERATED_ITEM_COUNT.get(),0),
-    NETHERITE(GeneratorType.NETHERITE,CommonConfigs.NETHERITE_GENERATOR_DELAY.get(),CommonConfigs.NETHERITE_GENERATOR_GENERATED_ITEM_COUNT.get(),0),
-    MODIUM(GeneratorType.MODIUM,CommonConfigs.MODIUM_GENERATOR_DELAY.get(),CommonConfigs.MODIUM_GENERATOR_GENERATED_ITEM_COUNT.get(),CommonConfigs.MODIUM_GENERATOR_CONSUME.get()),
-    DERIUM(GeneratorType.DERIUM,CommonConfigs.DERIUM_GENERATOR_DELAY.get(),CommonConfigs.DERIUM_GENERATOR_GENERATED_ITEM_COUNT.get(),CommonConfigs.DERIUM_GENERATOR_CONSUME.get()),
-    BLAZUM(GeneratorType.BLAZUM,CommonConfigs.BLAZUM_GENERATOR_DELAY.get(),CommonConfigs.BLAZUM_GENERATOR_GENERATED_ITEM_COUNT.get(),CommonConfigs.BLAZUM_GENERATOR_CONSUME.get()),
-    LAVIUM(GeneratorType.LAVIUM,CommonConfigs.LAVIUM_GENERATOR_DELAY.get(),CommonConfigs.LAVIUM_GENERATOR_GENERATED_ITEM_COUNT.get(),CommonConfigs.LAVIUM_GENERATOR_CONSUME.get()),
+    BASIC(GeneratorType.BASIC,CommonConfigs.BASIC_GENERATOR_DELAY,CommonConfigs.BASIC_GENERATOR_GENERATED_ITEM_COUNT,null),
+    IRON(GeneratorType.IRON,CommonConfigs.IRON_GENERATOR_DELAY,CommonConfigs.IRON_GENERATOR_GENERATED_ITEM_COUNT,null),
+    GOLD(GeneratorType.GOLD,CommonConfigs.GOLD_GENERATOR_DELAY,CommonConfigs.GOLD_GENERATOR_GENERATED_ITEM_COUNT,null),
+    DIAMOND(GeneratorType.DIAMOND,CommonConfigs.DIAMOND_GENERATOR_DELAY,CommonConfigs.DIAMOND_GENERATOR_GENERATED_ITEM_COUNT,null),
+    NETHERITE(GeneratorType.NETHERITE,CommonConfigs.NETHERITE_GENERATOR_DELAY,CommonConfigs.NETHERITE_GENERATOR_GENERATED_ITEM_COUNT,null),
+    MODIUM(GeneratorType.MODIUM,CommonConfigs.MODIUM_GENERATOR_DELAY,CommonConfigs.MODIUM_GENERATOR_GENERATED_ITEM_COUNT,CommonConfigs.MODIUM_GENERATOR_CONSUME),
+    DERIUM(GeneratorType.DERIUM,CommonConfigs.DERIUM_GENERATOR_DELAY,CommonConfigs.DERIUM_GENERATOR_GENERATED_ITEM_COUNT,CommonConfigs.DERIUM_GENERATOR_CONSUME),
+    BLAZUM(GeneratorType.BLAZUM,CommonConfigs.BLAZUM_GENERATOR_DELAY,CommonConfigs.BLAZUM_GENERATOR_GENERATED_ITEM_COUNT,CommonConfigs.BLAZUM_GENERATOR_CONSUME),
+    LAVIUM(GeneratorType.LAVIUM,CommonConfigs.LAVIUM_GENERATOR_DELAY,CommonConfigs.LAVIUM_GENERATOR_GENERATED_ITEM_COUNT,CommonConfigs.LAVIUM_GENERATOR_CONSUME),
     ;
 
     private GeneratorType type;
-    private int delay,itemCount,consumeFE;
+    private ForgeConfigSpec.ConfigValue<Integer> delay;
+    private ForgeConfigSpec.IntValue itemCount,consumeFE;
 
-    ConfigsForType(GeneratorType type, int delay, int itemCount,int consumeFE) {
+    ConfigsForType(GeneratorType type, ForgeConfigSpec.ConfigValue<Integer> delay, ForgeConfigSpec.IntValue itemCount, ForgeConfigSpec.IntValue consumeFE) {
         this.type = type;
         this.delay = delay;
         this.itemCount = itemCount;
@@ -32,15 +34,15 @@ public enum ConfigsForType {
     }
 
     public int getDelay() {
-        return delay;
+        return delay.get();
     }
 
     public int getItemCount() {
-        return itemCount;
+        return itemCount.get();
     }
 
     public int getConsumeFE() {
-        return consumeFE;
+        return consumeFE.get();
     }
 
     public static ConfigsForType getConfigForType(GeneratorType type){
