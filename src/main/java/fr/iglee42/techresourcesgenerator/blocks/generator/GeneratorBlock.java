@@ -104,14 +104,14 @@ public class GeneratorBlock extends Block {
                     if (itH.getStackInSlot(0).isEmpty()) {
                         ItemStack stack = player.getMainHandItem().copy();
                         stack.setCount(1);
-                        itH.insertItem(0, stack, false);
-                        player.getMainHandItem().setCount(player.getMainHandItem().getCount() - 1);
+                        if (itH.insertItem(0, stack, false) == ItemStack.EMPTY)
+                            player.getMainHandItem().setCount(player.getMainHandItem().getCount() - 1);
                     }
                 });
             } else
                 NetworkHooks.openGui(((ServerPlayerEntity) player), te, pos);
         }
-        return ActionResultType.PASS;
+        return ActionResultType.SUCCESS;
     }
 
     @Override

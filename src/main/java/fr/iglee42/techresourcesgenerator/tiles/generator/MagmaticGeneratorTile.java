@@ -52,14 +52,13 @@ public class MagmaticGeneratorTile extends GeneratorTile implements INamedContai
 
         @Override
         public @Nonnull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            if (slot == 0 && simulate) return ItemStack.EMPTY;
+            if (slot == 0 ) return ItemStack.EMPTY;
             return super.extractItem(slot, amount, simulate);
         }
 
         @Override
         public @Nonnull ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if ((slot == 1 || slot == 3) && simulate) return stack;
-            return super.insertItem(slot, stack, simulate);
+            return slot == 1 || slot == 3 ? stack : (slot==2 && Gessence.isGeneratorValidForGessence(stack,getGeneratorType()) ? super.insertItem(slot,stack,simulate) : stack);
         }
     };
 
@@ -79,48 +78,49 @@ public class MagmaticGeneratorTile extends GeneratorTile implements INamedContai
 
     @Override
     protected void second(World level, BlockPos pos, BlockState state, GeneratorTile tile) {
-        this.setGessence(Gessence.getByItemCanBeNull(itemHandler.getStackInSlot(2).getItem()));
-        if (LAVA_TANK.getFluidInTank(0).getAmount() <= 7000){
-            if (level.getFluidState(pos.offset(0,1,0)) == Fluids.LAVA.defaultFluidState()){
-                level.setBlockAndUpdate(pos.offset(0,1,0), Blocks.AIR.defaultBlockState());
-                setFluid(new FluidStack(Fluids.LAVA,LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
-                setChanged();
-            }
-        }
-        if (hasEnougthLavaForProcess() && getDelay() > 0){
-            setDelay(getDelay() - 1);
-            setFluid(new FluidStack(Fluids.LAVA,LAVA_TANK.getFluidInTank(0).getAmount() - 100));
-            setChanged();
-        }
-        ItemStack slot1 = itemHandler.getStackInSlot(0);
-        ItemStack slot2 = itemHandler.getStackInSlot(1);
-        if (slot1.getItem() == Items.BUCKET){
-            if (slot2.isEmpty()){
-                if (getFluidStack().getAmount() >= 1000){
-                    setFluid(new FluidStack(Fluids.LAVA,LAVA_TANK.getFluidInTank(0).getAmount() - 1000));
+        if (!level.isClientSide) {
+            this.setGessence(Gessence.getByItemCanBeNull(itemHandler.getStackInSlot(2).getItem()));
+            if (LAVA_TANK.getFluidInTank(0).getAmount() <= 7000) {
+                if (level.getFluidState(pos.offset(0, 1, 0)) == Fluids.LAVA.defaultFluidState()) {
+                    level.setBlockAndUpdate(pos.offset(0, 1, 0), Blocks.AIR.defaultBlockState());
+                    setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
                     setChanged();
-                    itemHandler.setStackInSlot(0, new ItemStack(Items.BUCKET,slot1.getCount() - 1));
-                    itemHandler.setStackInSlot(1,new ItemStack(Items.LAVA_BUCKET));
                 }
             }
-        } else if (slot1.getItem() == Items.LAVA_BUCKET){
-            if (slot2.isEmpty() || slot2.getItem() == Items.BUCKET){
-                if (getFluidStack().getAmount() <= 7000) {
-                    if (slot2.isEmpty()) {
-                        setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
+            if (hasEnougthLavaForProcess() && getDelay() > 0) {
+                setDelay(getDelay() - 1);
+                setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() - 100));
+                setChanged();
+            }
+            ItemStack slot1 = itemHandler.getStackInSlot(0);
+            ItemStack slot2 = itemHandler.getStackInSlot(1);
+            if (slot1.getItem() == Items.BUCKET) {
+                if (slot2.isEmpty()) {
+                    if (getFluidStack().getAmount() >= 1000) {
+                        setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() - 1000));
                         setChanged();
-                        itemHandler.setStackInSlot(0, ItemStack.EMPTY);
-                        itemHandler.setStackInSlot(1, new ItemStack(Items.BUCKET));
-                    } else if (slot2.getCount() < Items.BUCKET.getMaxStackSize()) {
-                        setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
-                        setChanged();
-                        itemHandler.setStackInSlot(0, ItemStack.EMPTY);
-                        itemHandler.setStackInSlot(1, new ItemStack(Items.BUCKET, slot2.getCount() + 1));
+                        itemHandler.setStackInSlot(0, new ItemStack(Items.BUCKET, slot1.getCount() - 1));
+                        itemHandler.setStackInSlot(1, new ItemStack(Items.LAVA_BUCKET));
+                    }
+                }
+            } else if (slot1.getItem() == Items.LAVA_BUCKET) {
+                if (slot2.isEmpty() || slot2.getItem() == Items.BUCKET) {
+                    if (getFluidStack().getAmount() <= 7000) {
+                        if (slot2.isEmpty()) {
+                            setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
+                            setChanged();
+                            itemHandler.setStackInSlot(0, ItemStack.EMPTY);
+                            itemHandler.setStackInSlot(1, new ItemStack(Items.BUCKET));
+                        } else if (slot2.getCount() < Items.BUCKET.getMaxStackSize()) {
+                            setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
+                            setChanged();
+                            itemHandler.setStackInSlot(0, ItemStack.EMPTY);
+                            itemHandler.setStackInSlot(1, new ItemStack(Items.BUCKET, slot2.getCount() + 1));
+                        }
                     }
                 }
             }
         }
-
     }
 
 

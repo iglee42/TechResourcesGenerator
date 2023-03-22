@@ -48,8 +48,7 @@ public class ElectricGeneratorTile extends GeneratorTile implements INamedContai
 
         @Override
         public @Nonnull ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if (slot == 1 && simulate) return stack;
-            return super.insertItem(slot, stack, simulate);
+            return slot == 1 ? stack : (slot==0 && Gessence.isGeneratorValidForGessence(stack,getGeneratorType()) ? super.insertItem(slot,stack,simulate) : stack);
         }
 
     };
@@ -75,30 +74,31 @@ public class ElectricGeneratorTile extends GeneratorTile implements INamedContai
         if (!level.isClientSide()) {
             ModMessages.sendToClients(new GeneratorDelaySyncS2CPacket(getProgress(), pos));
             ModMessages.sendToClients(new GeneratorTypeSyncS2C(getGeneratorType(), pos));
-        }
-        this.setGessence(Gessence.getByItemCanBeNull(itemHandler.getStackInSlot(0).getItem()));
-        if (level.getBlockEntity(pos.above()) instanceof SignTileEntity && itemHandler.getStackInSlot(0).getItem() == ModItem.getGessenceCard(Gessence.getByName("blazum"))){
-            ((SignTileEntity)level.getBlockEntity(pos.above())).setMessage(1,new StringTextComponent("Code Lyoko"));
-        }
-        int consumed = getGeneratorType().isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(getGeneratorType().name())).getConsumeFE() : getGeneratorType().consumed();
-        if (!this.enabled){
-            this.enabled = hasEnoughtEnergyForAllProcess() && getDelay() > 0;
-        }
-        if (getDelay() == 0 && progress == getDelayBetweenItem()){
-            this.enabled = false;
-            if (generateItem()){
-                progress = 0;
-                resetDelay();
+            this.setGessence(Gessence.getByItemCanBeNull(itemHandler.getStackInSlot(0).getItem()));
+            int consumed = getGeneratorType().isInModBase() ? ConfigsForType.getConfigForType(GeneratorType.getByName(getGeneratorType().name())).getConsumeFE() : getGeneratorType().consumed();
+            if (!this.enabled){
+                this.enabled = hasEnoughtEnergyForAllProcess() && getDelay() > 0;
+            }
+            if (getDelay() == 0 && progress == getDelayBetweenItem()){
+                this.enabled = false;
+                if (generateItem()){
+                    progress = 0;
+                    resetDelay();
+
+                }
+            }
+            if (isEnabled() && getEnergyStorage().extractEnergy(consumed,true) > 0){
+                setDelay(getDelay() - 1);
+                progress++;
+                getEnergyStorage().extractEnergy(consumed,false);
+                setChanged();
 
             }
         }
-        if (isEnabled() && getEnergyStorage().extractEnergy(consumed,true) > 0){
-            setDelay(getDelay() - 1);
-            progress++;
-            getEnergyStorage().extractEnergy(consumed,false);
-            setChanged();
-
+        if (level.getBlockEntity(pos.above()) instanceof SignTileEntity && itemHandler.getStackInSlot(0).getItem() == ModItem.getGessenceCard(Gessence.getByName("blazum"))){
+            ((SignTileEntity)level.getBlockEntity(pos.above())).setMessage(1,new StringTextComponent("Code Lyoko"));
         }
+
 
     }
 
