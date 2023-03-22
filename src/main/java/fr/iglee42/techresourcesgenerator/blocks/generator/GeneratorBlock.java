@@ -123,8 +123,8 @@ public class GeneratorBlock extends BaseEntityBlock {
                     if (itH.getStackInSlot(0).isEmpty()) {
                         ItemStack stack = player.getMainHandItem().copy();
                         stack.setCount(1);
-                        itH.insertItem(0, stack, false);
-                        player.getMainHandItem().setCount(player.getMainHandItem().getCount() - 1);
+                        if (itH.insertItem(0, stack, false) == ItemStack.EMPTY)
+                            player.getMainHandItem().setCount(player.getMainHandItem().getCount() - 1);
                     }
                 });
             } else
