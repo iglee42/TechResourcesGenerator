@@ -8,8 +8,6 @@ import fr.iglee42.techresourcesgenerator.network.ModMessages;
 import fr.iglee42.techresourcesgenerator.network.packets.FluidSyncS2CPacket;
 import fr.iglee42.techresourcesgenerator.network.packets.GeneratorGenerateReturnS2CPacket;
 import fr.iglee42.techresourcesgenerator.tiles.ModBlockEntities;
-import fr.iglee42.techresourcesgenerator.utils.GeneratorType;
-import fr.iglee42.techresourcesgenerator.utils.GessenceType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -43,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider {
 
-    private final ItemStackHandler itemHandler = new ItemStackHandler(4) {
+    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();    private final ItemStackHandler itemHandler = new ItemStackHandler(4) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -61,14 +59,14 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
             return super.insertItem(slot, stack, simulate);
         }
     };
-
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+    private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
 
     public MagmaticGeneratorTile(BlockState state, BlockPos pos, Generator generatorType) {
-        super(ModBlockEntities.MAGMATIC_GENERATOR.get(), state, pos,generatorType);
+        super(ModBlockEntities.MAGMATIC_GENERATOR.get(), state, pos, generatorType);
     }
+
     public MagmaticGeneratorTile(BlockPos pos, BlockState state) {
-        this( state, pos,Generator.getByName("iron"));
+        this(state, pos, Generator.getByName("iron"));
     }
 
     @Override
@@ -78,43 +76,45 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
 
     @Override
     protected void second(Level level, BlockPos pos, BlockState state, GeneratorTile tile) {
-        this.setGessence(Gessence.getByItemCanBeNull(itemHandler.getStackInSlot(2).getItem()));
-        if (LAVA_TANK.getFluidInTank(0).getAmount() <= 7000){
-            if (level.getFluidState(pos.offset(0,1,0)).is(Fluids.LAVA)){
-                level.setBlockAndUpdate(pos.offset(0,1,0), Blocks.AIR.defaultBlockState());
-                setFluid(new FluidStack(Fluids.LAVA,LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
-                setChanged();
-            }
-        }
-        if (hasEnougthLavaForProcess() && getDelay() > 0){
-            setDelay(getDelay() - 1);
-            setFluid(new FluidStack(Fluids.LAVA,LAVA_TANK.getFluidInTank(0).getAmount() - 100));
-            setChanged();
-        }
-        ItemStack slot1 = itemHandler.getStackInSlot(0);
-        ItemStack slot2 = itemHandler.getStackInSlot(1);
-        if (slot1.is(Items.BUCKET)){
-            if (slot2.isEmpty()){
-                if (getFluidStack().getAmount() >= 1000){
-                    setFluid(new FluidStack(Fluids.LAVA,LAVA_TANK.getFluidInTank(0).getAmount() - 1000));
+        if (!level.isClientSide) {
+            this.setGessence(Gessence.getByItemCanBeNull(itemHandler.getStackInSlot(2).getItem()));
+            if (LAVA_TANK.getFluidInTank(0).getAmount() <= 7000) {
+                if (level.getFluidState(pos.offset(0, 1, 0)).is(Fluids.LAVA)) {
+                    level.setBlockAndUpdate(pos.offset(0, 1, 0), Blocks.AIR.defaultBlockState());
+                    setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
                     setChanged();
-                    itemHandler.setStackInSlot(0, new ItemStack(Items.BUCKET,slot1.getCount() - 1));
-                    itemHandler.setStackInSlot(1,new ItemStack(Items.LAVA_BUCKET));
                 }
             }
-        } else if (slot1.is(Items.LAVA_BUCKET)){
-            if (slot2.isEmpty() || slot2.is(Items.BUCKET)){
-                if (getFluidStack().getAmount() <= 7000) {
-                    if (slot2.isEmpty()) {
-                        setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
+            if (hasEnougthLavaForProcess() && getDelay() > 0) {
+                setDelay(getDelay() - 1);
+                setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() - 100));
+                setChanged();
+            }
+            ItemStack slot1 = itemHandler.getStackInSlot(0);
+            ItemStack slot2 = itemHandler.getStackInSlot(1);
+            if (slot1.is(Items.BUCKET)) {
+                if (slot2.isEmpty()) {
+                    if (getFluidStack().getAmount() >= 1000) {
+                        setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() - 1000));
                         setChanged();
-                        itemHandler.setStackInSlot(0, ItemStack.EMPTY);
-                        itemHandler.setStackInSlot(1, new ItemStack(Items.BUCKET));
-                    } else if (slot2.getCount() < Items.BUCKET.getMaxStackSize()) {
-                        setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
-                        setChanged();
-                        itemHandler.setStackInSlot(0, ItemStack.EMPTY);
-                        itemHandler.setStackInSlot(1, new ItemStack(Items.BUCKET, slot2.getCount() + 1));
+                        itemHandler.setStackInSlot(0, new ItemStack(Items.BUCKET, slot1.getCount() - 1));
+                        itemHandler.setStackInSlot(1, new ItemStack(Items.LAVA_BUCKET));
+                    }
+                }
+            } else if (slot1.is(Items.LAVA_BUCKET)) {
+                if (slot2.isEmpty() || slot2.is(Items.BUCKET)) {
+                    if (getFluidStack().getAmount() <= 7000) {
+                        if (slot2.isEmpty()) {
+                            setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
+                            setChanged();
+                            itemHandler.setStackInSlot(0, ItemStack.EMPTY);
+                            itemHandler.setStackInSlot(1, new ItemStack(Items.BUCKET));
+                        } else if (slot2.getCount() < Items.BUCKET.getMaxStackSize()) {
+                            setFluid(new FluidStack(Fluids.LAVA, LAVA_TANK.getFluidInTank(0).getAmount() + 1000));
+                            setChanged();
+                            itemHandler.setStackInSlot(0, ItemStack.EMPTY);
+                            itemHandler.setStackInSlot(1, new ItemStack(Items.BUCKET, slot2.getCount() + 1));
+                        }
                     }
                 }
             }
@@ -123,29 +123,27 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
     }
 
 
-    public int getTankCapacity(int tank){
+    public int getTankCapacity(int tank) {
         return LAVA_TANK.getTankCapacity(tank);
     }
 
-    public boolean hasEnougthLavaForProcess(){
+    public boolean hasEnougthLavaForProcess() {
         return LAVA_TANK.getFluidInTank(0).getAmount() >= 100;
     }
 
-    private final FluidTank LAVA_TANK = new FluidTank(8000, f->f.getFluid() == Fluids.LAVA){
+    @Override
+    public void setChanged() {
+        super.setChanged();
+        if (!level.isClientSide()) {
+            ModMessages.sendToClients(new FluidSyncS2CPacket(getFluidStack(), worldPosition));
+        }
+    }    private final FluidTank LAVA_TANK = new FluidTank(8000, f -> f.getFluid() == Fluids.LAVA) {
         @Override
         public void onContentsChanged() {
             setChanged();
         }
 
     };
-
-    @Override
-    public void setChanged() {
-        super.setChanged();
-        if(!level.isClientSide()) {
-            ModMessages.sendToClients(new FluidSyncS2CPacket(getFluidStack(), worldPosition));
-        }
-    }
 
     public void setFluid(FluidStack stack) {
         this.LAVA_TANK.setFluid(stack);
@@ -154,10 +152,10 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
     public FluidStack getFluidStack() {
         return this.LAVA_TANK.getFluid();
     }
-    private LazyOptional<IFluidHandler> lazyFluidHandler = LazyOptional.empty();
+
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction side) {
-        return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? lazyItemHandler.cast() : (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? lazyFluidHandler.cast() : super.getCapability(cap,side));
+        return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? lazyItemHandler.cast() : (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? lazyFluidHandler.cast() : super.getCapability(cap, side));
     }
 
     @Override
@@ -179,37 +177,37 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
         super.load(tag);
         itemHandler.deserializeNBT(tag.getCompound("inventory"));
         LAVA_TANK.readFromNBT(tag.getCompound("lavatank"));
-        if (tag.contains("generatorType"))this.setGeneratorType(Generator.getByName(tag.getString("generatorType")));
+        if (tag.contains("generatorType")) this.setGeneratorType(Generator.getByName(tag.getString("generatorType")));
     }
 
     @Override
     public boolean generateItem() {
-        if (ItemGessence.isElectronicGessence(this.itemHandler.getStackInSlot(2).getItem())){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.dontaccept").withStyle(ChatFormatting.RED),worldPosition));
+        if (ItemGessence.isElectronicGessence(this.itemHandler.getStackInSlot(2).getItem())) {
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.dontaccept").withStyle(ChatFormatting.RED), worldPosition));
             return false;
         }
-        if (!this.hasGessence()){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.no_gessence").withStyle(ChatFormatting.RED),worldPosition));
+        if (!this.hasGessence()) {
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.no_gessence").withStyle(ChatFormatting.RED), worldPosition));
             return false;
-        } else if (getGessence().getMinimumGenerator().getOrder() > getGeneratorType().getOrder()){
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.gessence_not_compatible").withStyle(ChatFormatting.RED),worldPosition));
+        } else if (getGessence().getMinimumGenerator().getOrder() > getGeneratorType().getOrder()) {
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.gessence_not_compatible").withStyle(ChatFormatting.RED), worldPosition));
             return false;
         }
         if (itemHandler.getStackInSlot(3).isEmpty()) {
             itemHandler.setStackInSlot(3, new ItemStack(this.getGessence().getItem(), this.getItemsDropped()));
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TextComponent(""),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TextComponent(""), worldPosition));
             return true;
         } else if (itemHandler.getStackInSlot(3).is(this.getGessence().getItem())) {
             if (itemHandler.getStackInSlot(3).getMaxStackSize() >= (itemHandler.getStackInSlot(3).getCount() + getItemsDropped())) {
                 itemHandler.setStackInSlot(3, new ItemStack(this.getGessence().getItem(), itemHandler.getStackInSlot(3).getCount() + this.getItemsDropped()));
-                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TextComponent(""),worldPosition));
+                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TextComponent(""), worldPosition));
                 return true;
             } else {
-                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
+                ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED), worldPosition));
                 return false;
             }
         } else
-            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED),worldPosition));
+            ModMessages.sendToClients(new GeneratorGenerateReturnS2CPacket(new TranslatableComponent("tooltip.techresourcesgenerator.output_slot_full").withStyle(ChatFormatting.RED), worldPosition));
         return false;
     }
 
@@ -219,9 +217,10 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
         tag.put("inventory", itemHandler.serializeNBT());
         CompoundTag tank = new CompoundTag();
         LAVA_TANK.writeToNBT(tank);
-        tag.put("lavatank",tank);
-        if (this.getGeneratorType() != null)tag.putString("generatorType",getGeneratorType().name());
+        tag.put("lavatank", tank);
+        if (this.getGeneratorType() != null) tag.putString("generatorType", getGeneratorType().name());
     }
+
     public void drops() {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
         for (int i = 0; i < itemHandler.getSlots(); i++) {
@@ -230,8 +229,6 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
 
         Containers.dropContents(this.level, this.worldPosition, inventory);
     }
-
-
 
     @Override
     public Component getDisplayName() {
@@ -242,6 +239,11 @@ public class MagmaticGeneratorTile extends GeneratorTile implements MenuProvider
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
         ModMessages.sendToClients(new FluidSyncS2CPacket(this.getFluidStack(), worldPosition));
-        return new MagmaticGeneratorMenu(id,inv,this,getGeneratorType());
+        return new MagmaticGeneratorMenu(id, inv, this, getGeneratorType());
     }
+
+
+
+
+
 }
