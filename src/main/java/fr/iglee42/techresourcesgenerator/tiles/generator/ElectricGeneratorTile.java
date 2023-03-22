@@ -48,8 +48,7 @@ public class ElectricGeneratorTile extends GeneratorTile implements MenuProvider
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (slot == 1 && simulate) return stack;
-            return super.insertItem(slot, stack, simulate);
+            return slot == 1 ? stack : (slot==0 && Gessence.isGeneratorValidForGessence(stack,getGeneratorType()) ? super.insertItem(slot,stack,simulate) : stack);
         }
 
     };
